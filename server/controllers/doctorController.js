@@ -1,9 +1,5 @@
-// ...existing code...
-
-// ...existing code...
-
-// ...existing code...
-
+const User = require('../models/User');
+const sendSms = require('../utils/sms');
 const Doctor = require('../models/Doctor');
 const Notification = require('../models/Notification');
 const bcrypt = require('bcryptjs');
@@ -26,12 +22,7 @@ const getDoctorAppointments = asyncHandler(async (req, res) => {
         .sort({ date: 1, time: 1 });
     res.status(200).json(appointments);
 });
-// ...existing code...
 
-
-// @desc    Get doctors grouped by main specialties
-// @route   GET /api/doctors/grouped-by-specialty
-// @access  Public
 const getDoctorsGroupedBySpecialty = asyncHandler(async (req, res) => {
     // Define the main specialties
     const mainSpecialties = [
@@ -315,6 +306,19 @@ const manageQueue = asyncHandler(async (req, res) => { // ✅ asyncHandler se wr
             throw new Error('No patient to serve');
         }
         const servedPatient = doctor.queue[servedPatientIndex];
+        
+           // --- YEH NAYA CODE ADD KAREIN ---
+        // Jiska number aaya hai, use SMS bhejna
+        try {
+            const currentPatient = await User.findById(servedPatient.patientId);
+            if (currentPatient && currentPatient.phone) {
+                const message = `Update from Dr. ${doctor.name}'s clinic: It's your turn now. Please proceed to the room. Your token is #${servedPatient.tokenNumber}.`;
+                await sendSms(currentPatient.phone, message);
+            }
+        } catch (smsError) {
+            console.error("SMS sending failed for current patient:", smsError);
+        }
+        
         doctor.currentQueueToken = servedPatient.tokenNumber;
         servedPatient.servedAt = new Date();
 
@@ -341,6 +345,8 @@ const manageQueue = asyncHandler(async (req, res) => { // ✅ asyncHandler se wr
         await Appointment.deleteOne({ doctor: doctor._id, user: servedPatient.patientId });
 
         await doctor.save();
+
+
         // Notify the patient whose turn is up
         await Notification.create({
             user: servedPatient.patientId,
@@ -762,6 +768,17 @@ const bookAppointment = asyncHandler(async (req, res) => {
     }
 
     await doctor.save();
+
+      // --- YEH HAI NAYA SMS LOGIC ---
+    try {
+        const patient = await User.findById(req.user._id);
+        if (patient && patient.phone) {
+            const message = `Confirmation: Your appointment with Dr. ${doctor.name} is booked for ${date} at ${time}.`;
+            await sendSms(patient.phone, message);
+        }
+    } catch (smsError) {
+        console.error("SMS sending failed after booking:", smsError);
+    }
 
     // Send notification to user
     await Notification.create({

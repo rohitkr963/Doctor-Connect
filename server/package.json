@@ -21,7 +21,8 @@
     "mongoose": "^8.16.4",
     "multer": "^2.0.2",
     "node-fetch": "^3.3.2",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "twilio": "^5.8.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

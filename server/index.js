@@ -9,6 +9,7 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 
 // --- Socket.io Setup ---
@@ -35,6 +36,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // --- Socket.io Setup ---
 const http = require('http');
