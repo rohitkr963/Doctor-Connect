@@ -8,12 +8,13 @@ const cors = require('cors');
 const doctorRoutes = require('./routes/doctorRoutes');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+
 
 // --- Socket.io Setup ---
 connectDB();
 
 const app = express();
-
 
 // Middlewares
 app.use(cors());
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // --- Socket.io Setup ---
 const http = require('http');

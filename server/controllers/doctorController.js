@@ -10,36 +10,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler'); // ✅ Express-async-handler import kiya
 
-// Get all appointments for a doctor
+// Get all appointments for a doctor (with symptoms)
 // @route   GET /api/doctors/:id/appointments
 // @access  Private (Doctor)
+const Appointment = require('../models/Appointment');
 const getDoctorAppointments = asyncHandler(async (req, res) => {
-    const doctor = await Doctor.findById(req.params.id);
-    if (!doctor) {
-        res.status(404);
-        throw new Error('Doctor not found');
-    }
-    // Only allow doctor to see their own appointments
-    if (doctor._id.toString() !== req.doctor._id.toString()) {
+    const doctorId = req.params.id;
+    // Optionally, check if req.doctor._id === doctorId for security
+    if (req.doctor && req.doctor._id.toString() !== doctorId) {
         res.status(403);
         throw new Error('Not authorized');
     }
-    // Collect all booked slots with user info
-    const appointments = [];
-    for (const avail of doctor.availability) {
-        for (const slot of avail.slots) {
-            if (slot.isBooked && slot.bookedBy) {
-                // Populate user info
-                const user = await require('../models/User').findById(slot.bookedBy).select('name _id');
-                appointments.push({
-                    _id: slot._id,
-                    user,
-                    date: avail.date,
-                    time: slot.time,
-                });
-            }
-        }
-    }
+    const appointments = await Appointment.find({ doctor: doctorId })
+        .populate('user', 'name email')
+        .sort({ date: 1, time: 1 });
     res.status(200).json(appointments);
 });
 // ...existing code...
@@ -353,6 +337,9 @@ const manageQueue = asyncHandler(async (req, res) => { // ✅ asyncHandler se wr
             }
         }
 
+        // Remove the appointment for this patient and doctor
+        await Appointment.deleteOne({ doctor: doctor._id, user: servedPatient.patientId });
+
         await doctor.save();
         // Notify the patient whose turn is up
         await Notification.create({
@@ -382,6 +369,10 @@ const manageQueue = asyncHandler(async (req, res) => { // ✅ asyncHandler se wr
         doctor.queue = [];
         doctor.currentQueueToken = 0;
         doctor.lastTokenIssued = 0;
+
+        // Remove all appointments for this doctor
+        await Appointment.deleteMany({ doctor: doctor._id });
+
         await doctor.save();
         // Send notification to all affected users
         for (const userId of cancelledUserIds) {
@@ -714,7 +705,7 @@ const bookAppointment = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('Doctor not found');
     }
-    const { date, time } = req.body;
+    const { date, time, fee, symptoms } = req.body;
     if (!date || !time) {
         res.status(400);
         throw new Error('Date and time required');
@@ -780,7 +771,19 @@ const bookAppointment = asyncHandler(async (req, res) => {
         type: 'queue',
     });
 
-    res.status(200).json({ message: 'Appointment booked and added to queue', date, time });
+    // Save appointment in Appointment collection with symptoms
+    const Appointment = require('../models/Appointment');
+    const appointment = new Appointment({
+        doctor: doctor._id,
+        user: req.user._id,
+        date,
+        time,
+        fee,
+        symptoms: symptoms || ''
+    });
+    await appointment.save();
+
+    res.status(200).json({ message: 'Appointment booked and added to queue', date, time, symptoms });
 });
 
 // Sabse aakhir mein module.exports

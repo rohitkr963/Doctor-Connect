@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "react-calendar": "^6.0.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "swiper": "^11.2.10"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11"
   }
 }
