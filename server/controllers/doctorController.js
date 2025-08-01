@@ -208,6 +208,8 @@ const searchDoctors = asyncHandler(async (req, res) => { // ✅ asyncHandler se 
         // Use correct path for specialty
         query['profileDetails.specialty'] = { $regex: req.query.specialty, $options: 'i' };
     }
+    // Only show doctors who are currently available (i.e., have logged in and set status)
+    query.currentStatus = 'Available';
     const doctors = await Doctor.find(query).select('-password');
     res.json(doctors);
 });

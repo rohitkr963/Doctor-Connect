@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
 
 
 // --- Socket.io Setup ---
@@ -37,6 +38,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // --- Socket.io Setup ---
 const http = require('http');
