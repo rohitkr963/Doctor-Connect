@@ -13,7 +13,6 @@ const {
     getUserNotifications // Notification fetch karne wala function
     ,getPastAppointments // Past appointments controller
 } = require('../controllers/userController');
-const { protectUser } = require('../middleware/userAuthMiddleware'); // Aapka existing security guard
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware'); // Multer upload middleware
 const Notification = require('../models/Notification');
@@ -31,7 +30,7 @@ router.patch('/notifications/reset', protect, async (req, res) => {
 });
 
 
-router.put('/notifications/read-all', protectUser, async (req, res) => {
+router.put('/notifications/read-all', protect, async (req, res) => {
     try {
         await Notification.updateMany({ user: req.user._id, isRead: false }, { isRead: true });
         res.json({ message: 'All notifications marked as read.' });
@@ -46,18 +45,18 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 // --- Private Routes (User ka token chahiye) ---
-router.get('/my-queues', protectUser, getMyActiveQueues);
+router.get('/my-queues', protect, getMyActiveQueues);
 
 // Past Appointments Route
-router.get('/past-appointments', protectUser, getPastAppointments);
+router.get('/past-appointments', protect, getPastAppointments);
 
 // User Profile Routes
-router.get('/profile', protectUser, getUserProfile);
-router.put('/profile', protectUser, upload.single('profilePic'), updateUserProfile);
+router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, upload.single('profilePic'), updateUserProfile);
 
 // ✅ Family Member Routes
-router.post('/family-members', protectUser, addFamilyMember); // Family member add karne ke liye
-router.delete('/family-members/:memberId', protectUser, removeFamilyMember); // Family member remove karne ke liye
+router.post('/family-members', protect, addFamilyMember); // Family member add karne ke liye
+router.delete('/family-members/:memberId', protect, removeFamilyMember); // Family member remove karne ke liye
 
 // Notification Route (ensure only logged-in user's notifications are fetched)
 router.get('/notifications', protect, async (req, res) => {
@@ -73,7 +72,7 @@ router.get('/notifications', protect, async (req, res) => {
 });
 
 // Mark Notification as Read Route
-router.put('/notifications/:id/read', protectUser, async (req, res) => {
+router.put('/notifications/:id/read', protect, async (req, res) => {
     try {
         const notif = await Notification.findOneAndUpdate(
             { _id: req.params.id, user: req.user._id },
@@ -90,7 +89,7 @@ router.put('/notifications/:id/read', protectUser, async (req, res) => {
 });
 
 // Delete Notification Route (extra validation)
-router.delete('/notifications/:id', protectUser, async (req, res) => {
+router.delete('/notifications/:id', protect, async (req, res) => {
     try {
         const notif = await Notification.findOne({ _id: req.params.id });
         if (!notif || notif.user.toString() !== req.user._id.toString()) {

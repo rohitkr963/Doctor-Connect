@@ -75,6 +75,7 @@ const Navbar = () => {
                   <>
                     <Link to="/dashboard/patient" className="text-gray-600 hover:text-blue-600 font-medium">My Dashboard</Link>
                     <Link to="/profile/user" className="text-gray-600 hover:text-blue-600 font-medium">My Profile</Link>
+                   <Link to="/my-records" className="text-gray-600 hover:text-blue-600 font-medium">My Records</Link>
                     <Link to="/notifications" title="Notifications" className="relative" onClick={handleBellClick}>
                         <BellIcon />
                         {notifCount > 0 && (

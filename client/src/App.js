@@ -21,6 +21,8 @@ import DoctorAppointmentsPage from './pages/DoctorAppointmentsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ChatPage from './pages/ChatPage';
 import DoctorChatPage from './pages/DoctorChatPage';
+import UserDocumentsPage from './pages/UserDocumentsPage';
+// import UserProfileForDoctor from './pages/UserProfileForDoctor'; // Removed unused import
 
 function App() {
   return (
@@ -33,39 +35,40 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login/doctor" element={<DoctorLoginPage />} />
             <Route path="/register/doctor" element={<DoctorRegisterPage />} />
-            <Route path="/doctor/dashboard" element={<ProtectedRoute type="doctor"><DoctorDashboard /></ProtectedRoute>} />
-            <Route path="/patient-history" element={<ProtectedRoute type="doctor"><PatientHistoryPage /></ProtectedRoute>} />
+                <Route path="/doctor/dashboard" element={<ProtectedRoute type="doctor" redirectTo="/"> <DoctorDashboard /> </ProtectedRoute>} />
+                <Route path="/patient-history" element={<ProtectedRoute type="doctor" redirectTo="/"> <PatientHistoryPage /> </ProtectedRoute>} />
             <Route path="/login/user" element={<UserLoginPage />} />
             <Route path="/register/user" element={<UserRegisterPage />} />
             <Route path="/doctor/:doctorId" element={<ProtectedRoute><DoctorProfilePage /></ProtectedRoute>} />
             <Route path="/doctor/profile/edit" element={<ProtectedRoute type="doctor"><DoctorProfileEditPage /></ProtectedRoute>} />
             <Route path="/doctor/profile/:doctorId" element={<ProtectedRoute><DoctorProfilePage /></ProtectedRoute>} />
             <Route path="/dashboard/patient" element={
-              <ProtectedRoute>
+              <ProtectedRoute redirectTo="/">
                 <PatientDashboard />
               </ProtectedRoute>
             } />
             <Route path="/profile/user" element={
-              <ProtectedRoute>
+              <ProtectedRoute redirectTo="/">
                 <UserProfilePage />
               </ProtectedRoute>
             } />
             <Route path="/profile/user/edit" element={
-              <ProtectedRoute>
+              <ProtectedRoute redirectTo="/">
                 <UserProfileEditPage />
               </ProtectedRoute>
             } />
-            <Route path="/specialty/:specialty" element={<SpecialtyDoctorsPage />} />
-            <Route path="/specialty" element={<SpecialtyDoctorsPage />} />
+           <Route path="/my-records" element={<ProtectedRoute redirectTo="/"><UserDocumentsPage /></ProtectedRoute>} />
+                <Route path="/specialty/:specialty" element={<ProtectedRoute redirectTo="/"> <SpecialtyDoctorsPage /> </ProtectedRoute>} />
+                <Route path="/specialty" element={<ProtectedRoute redirectTo="/"> <SpecialtyDoctorsPage /> </ProtectedRoute>} />
             <Route path="/chat/:doctorId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
             <Route path="/doctor/chat" element={<ProtectedRoute type="doctor"><DoctorChatPage /></ProtectedRoute>} />
             <Route path="/notifications" element={
-              <ProtectedRoute>
+              <ProtectedRoute redirectTo="/">
                 <NotificationsPage />
               </ProtectedRoute>
             } />
-            <Route path="/doctor/appointments" element={<ProtectedRoute type="doctor"><DoctorAppointmentsPage /></ProtectedRoute>} />
-            <Route path="/doctor/user/:userId" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+                <Route path="/doctor/appointments" element={<ProtectedRoute type="doctor" redirectTo="/"> <DoctorAppointmentsPage /> </ProtectedRoute>} />
+                <Route path="/doctor/user/:userId" element={<ProtectedRoute type="doctor" redirectTo="/"> <UserProfilePage hideEdit={true} /> </ProtectedRoute>} />
           </Routes>
         </main>
       </div>

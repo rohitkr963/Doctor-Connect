@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { getMessages, sendMessage, getDoctorChatUsers } = require('../controllers/messageController');
 const { protect } = require('../middleware/authMiddleware');
-const { protectUser } = require('../middleware/userAuthMiddleware');
+// const { protectUser } = require('../middleware/userAuthMiddleware');
 const Message = require('../models/Message');
 const upload = require('../middleware/uploadMiddleware');
 
@@ -115,7 +115,6 @@ router.put('/mark-read/:doctorId/:userId', protect, async (req, res) => {
   }
 });
 
-
 // Get all users who have chatted with this doctor
 router.get('/users/:doctorId', getDoctorChatUsers);
 // Get unread message count for doctor
@@ -130,7 +129,7 @@ router.get('/doctor/unread-count', protect, async (req, res) => {
 });
 
 // Get unread message count for user
-router.get('/user/unread-count', protectUser, async (req, res) => {
+router.get('/user/unread-count', protect, async (req, res) => {
   try {
     const userId = req.user._id;
     const count = await Message.countDocuments({ receiverId: userId, isRead: false });

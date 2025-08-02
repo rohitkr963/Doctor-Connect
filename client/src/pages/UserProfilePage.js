@@ -4,50 +4,54 @@ import { useNavigate, useLocation } from 'react-router-dom'; // ✅ useLocation 
 import AuthContext from '../context/AuthContext';
 import { getUserProfileAPI } from '../api/userApi';
 
-const UserProfilePage = () => {
+
+const UserProfilePage = ({ hideEdit }) => {
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
-    const location = useLocation(); // ✅ useLocation hook use kiya
-
+    const location = useLocation();
     const [userProfile, setUserProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchProfile = async () => {
-            if (auth?.token && auth.type === 'user') {
-                try {
-                    setLoading(true); // Ensure loading state is true on re-fetch
-                    const data = await getUserProfileAPI(auth.token);
-                    const profileData = {
-                        name: data?.name || "Patient Name",
-                        phone: data?.phone || "N/A",
-                        isPremiumMember: data?.isPremiumMember || false,
-                        profilePic: data?.profilePic || "https://images.unsplash.com/photo-1573496359142-b8d8773400a4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Default image if none from API
-                        height: data?.height || "5.8 in",
-                        weight: data?.weight || "70 kg",
-                        age: data?.age || "30",
-                        bloodGroup: data?.bloodGroup || "A+",
-                        aboutMe: data?.aboutMe || "I am a registered patient looking for convenient healthcare solutions. I appreciate personalized care and quick access to medical information.",
-                        familyMembers: data?.familyMembers || [
-                            { id: 1, name: "Sonu K.", avatar: "https://via.placeholder.com/50/FF5733/FFFFFF?text=SK" },
-                            { id: 2, name: "Monu E.", avatar: "https://via.placeholder.com/50/33FF57/FFFFFF?text=ME" },
-                            { id: 3, name: "Chinki A.", avatar: "https://via.placeholder.com/50/3357FF/FFFFFF?text=CA" },
-                        ]
-                    };
-                    setUserProfile(profileData);
-                } catch (err) {
-                    setError('Could not load your profile.');
-                    console.error("Profile fetch error:", err);
-                } finally {
-                    setLoading(false);
+            try {
+                setLoading(true);
+                let data;
+                if (auth?.token && auth.type === 'user' && !hideEdit) {
+                    data = await getUserProfileAPI(auth.token);
+                } else {
+                    // Doctor viewing user profile: get userId from URL
+                    const userId = location.pathname.split('/').pop();
+                    const res = await fetch(`/api/users/${userId}`);
+                    data = await res.json();
                 }
-            } else {
-                navigate('/login/user');
+                const profileData = {
+                    name: data?.name || "Patient Name",
+                    phone: data?.phone || "N/A",
+                    isPremiumMember: data?.isPremiumMember || false,
+                    profilePic: data?.profilePic || "https://images.unsplash.com/photo-1573496359142-b8d8773400a4?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    height: data?.height || "5.8 in",
+                    weight: data?.weight || "70 kg",
+                    age: data?.age || "30",
+                    bloodGroup: data?.bloodGroup || "A+",
+                    aboutMe: data?.aboutMe || "I am a registered patient looking for convenient healthcare solutions. I appreciate personalized care and quick access to medical information.",
+                    familyMembers: data?.familyMembers || [
+                        { id: 1, name: "Sonu K.", avatar: "https://via.placeholder.com/50/FF5733/FFFFFF?text=SK" },
+                        { id: 2, name: "Monu E.", avatar: "https://via.placeholder.com/50/33FF57/FFFFFF?text=ME" },
+                        { id: 3, name: "Chinki A.", avatar: "https://via.placeholder.com/50/3357FF/FFFFFF?text=CA" },
+                    ]
+                };
+                setUserProfile(profileData);
+            } catch (err) {
+                setError('Could not load your profile.');
+                console.error("Profile fetch error:", err);
+            } finally {
+                setLoading(false);
             }
         };
         fetchProfile();
-    }, [auth, navigate, location.key]); // ✅ location.key ko dependency array mein add kiya
+    }, [auth, navigate, location.key, hideEdit]);
 
     const handleEditProfile = () => {
         navigate('/profile/user/edit');
@@ -162,12 +166,14 @@ const UserProfilePage = () => {
               </div>
             </div>
             {/* Bottom Edit Profile Button */}
+            {!hideEdit && (
             <button
               className="w-full mt-8 bg-indigo-600 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-60"
               onClick={handleEditProfile}
             >
               Edit Profile
             </button>
+            )}
             {/* Animations */}
             <style>{`
               @keyframes floatSlow {

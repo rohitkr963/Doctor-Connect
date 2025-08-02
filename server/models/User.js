@@ -17,6 +17,14 @@ const userSchema = new mongoose.Schema(
                 'Kripya ek valid 10-digit ka phone number dalein',
             ],
         },
+        // Medical Records for Health Record feature
+        medicalRecords: [{
+            public_id: { type: String, required: true },
+            url: { type: String, required: true },
+            fileName: { type: String, required: true },
+            docType: { type: String, default: '' },
+            uploadedAt: { type: Date, default: Date.now }
+        }],
         password: {
             type: String,
             required: [true, 'Kripya password dalein'],

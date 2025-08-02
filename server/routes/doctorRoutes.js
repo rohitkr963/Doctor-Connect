@@ -19,7 +19,6 @@
             } = require('../controllers/doctorController');
 
             const { protect } = require('../middleware/authMiddleware'); // Doctor wala guard
-            const { protectUser } = require('../middleware/userAuthMiddleware'); // User wala guard
 
 // --- Public Routes ---
 router.get('/specializations', getSpecializations);
@@ -29,7 +28,7 @@ router.post('/register', registerDoctor);
 router.post('/login', loginDoctor);
 router.get('/:id', getDoctorById);
 // Doctor profile view (only for logged-in users)
-router.get('/:id', protectUser, getDoctorById);
+router.get('/:id', protect, getDoctorById);
 
             // --- Doctor's Private Routes (Doctor ka token chahiye) ---
             router.put('/status', protect, updateDoctorStatus);
@@ -45,17 +44,17 @@ router.delete('/patients/history/:patientId', protect, require('../controllers/d
 // Doctor sets availability
 router.put('/availability', protect, require('../controllers/doctorController').setDoctorAvailability);
 
-            // --- User's Private Routes (User ka token chahiye) ---
-            router.post('/:id/join-queue', protectUser, joinQueue);
+// --- User's Private Routes (User ka token chahiye) ---
+router.post('/:id/join-queue', protect, joinQueue);
 // Join queue (only for logged-in users)
-router.post('/queue/join', protectUser, joinQueue);
-            router.get('/:id/queue-status', protectUser, getQueueStatusForPatient);
-            router.post('/:id/reviews', protectUser, createDoctorReview);
-            router.put('/:id/reviews/:reviewId', protectUser, updateDoctorReview); // <-- YEH NAYI LINE ADD KAREIN
-            router.delete('/:id/reviews/:reviewId', protectUser, deleteDoctorReview); // <-- YEH NAYI LINE ADD KAREIN
+router.post('/queue/join', protect, joinQueue);
+router.get('/:id/queue-status', protect, getQueueStatusForPatient);
+router.post('/:id/reviews', protect, createDoctorReview);
+router.put('/:id/reviews/:reviewId', protect, updateDoctorReview); // <-- YEH NAYI LINE ADD KAREIN
+router.delete('/:id/reviews/:reviewId', protect, deleteDoctorReview); // <-- YEH NAYI LINE ADD KAREIN
            
            // User books appointment
-           router.post('/:id/book-appointment', protectUser, require('../controllers/doctorController').bookAppointment);
+           router.post('/:id/book-appointment', protect, require('../controllers/doctorController').bookAppointment);
 
            // Doctor gets all booked appointments
            router.get('/:id/appointments', protect, require('../controllers/doctorController').getDoctorAppointments);

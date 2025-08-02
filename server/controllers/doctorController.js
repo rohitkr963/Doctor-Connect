@@ -348,7 +348,6 @@ const manageQueue = asyncHandler(async (req, res) => { // ✅ asyncHandler se wr
 
         await doctor.save();
 
-
         // Notify the patient whose turn is up
         await Notification.create({
             user: servedPatient.patientId,
