@@ -67,7 +67,7 @@ const ChatPage = () => {
       {/* Chat body, full width, no box */}
       <div className="flex-1 flex flex-col w-full max-w-3xl mx-auto animate-fade-in-up" style={{ minHeight: 0 }}>
         <div className="flex-1 flex flex-col">
-          <ChatModal
+          <ChatModal 
             doctor={doctor}
             patient={patient}
             appointmentId={null}

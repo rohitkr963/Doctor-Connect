@@ -27,6 +27,25 @@ exports.uploadDocument = asyncHandler(async (req, res) => {
     uploadedAt: new Date(),
   });
   await user.save();
+
+  // --- Save PDF to local reports folder for Q&A ---
+  const fs = require('fs');
+  const path = require('path');
+  const userId = req.user._id.toString();
+  const reportsDir = path.join(__dirname, `../uploads/reports/${userId}`);
+  // Only copy if PDF
+  if (req.file.mimetype === 'application/pdf') {
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+    }
+    const destPath = path.join(reportsDir, req.file.originalname);
+    try {
+      fs.copyFileSync(req.file.path, destPath);
+    } catch (err) {
+      console.error('Error copying PDF to reports folder:', err);
+    }
+  }
+
   res.json({ message: 'File uploaded', record: user.medicalRecords[user.medicalRecords.length - 1] });
 });
 
