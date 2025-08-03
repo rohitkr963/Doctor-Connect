@@ -26,6 +26,7 @@ app.use(express.json());
 // Serve uploads folder as static
 app.use('/uploads', express.static('uploads'));
 
+
 const PORT = process.env.PORT || 5000;
 const { Server } = require('socket.io');
 

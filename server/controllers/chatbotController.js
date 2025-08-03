@@ -1,22 +1,11 @@
+
 const asyncHandler = require('express-async-handler');
 const axios = require('axios');
 const Doctor = require('../models/Doctor');
 
 
 // Smart chat handler: forwards to Python LangChain service
-const smartChatHandler = asyncHandler(async (req, res) => {
-    const { message } = req.body;
-    if (!message) {
-        return res.status(400).json({ message: 'Message is required' });
-    }
-    try {
-        const { data } = await axios.post('http://localhost:8000/chat', { message });
-        res.json({ reply: data.answer });
-    } catch (error) {
-        console.error('Error calling Python AI service:', error.response?.data || error.message);
-        res.status(500).json({ message: 'Error communicating with the smart AI assistant.' });
-    }
-});
+// Doctor Search Handler: finds logged-in doctors by name, specialty, or cit
 
 const symptomChecker = asyncHandler(async (req, res) => {
     const { message } = req.body;
@@ -40,14 +29,23 @@ const symptomChecker = asyncHandler(async (req, res) => {
 
         const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        // Try to extract specialty from AI response
-        let specialtyMatch = aiResponse?.match(/(General Physician|Cardiologist|Dentist|Orthopedic|Dermatologist)/i);
+
+        // Expanded specialty extraction
+        let specialtyMatch = aiResponse?.match(/(General Physician|Cardiologist|Dentist|Orthopedic|Dermatologist|Neurologist|Neurology|ENT|Pediatrician|Gynecologist|Oncologist|Psychiatrist|Ophthalmologist|Urologist|Gastroenterologist|Pulmonologist|Endocrinologist|Nephrologist|Rheumatologist|Surgeon|Physiotherapist|Dermatology|Psychology|Medicine|Surgery)/i);
         let specialty = specialtyMatch ? specialtyMatch[0] : null;
 
         if (specialty) {
-            const doctors = await Doctor.find({
-                'profileDetails.specialty': { $regex: specialty, $options: 'i' }
-            }).limit(5).select('name profileDetails city rating numReviews');
+            // Search both specialty fields (string and array)
+            const query = {
+                $or: [
+                    { 'profileDetails.specialty': { $regex: specialty, $options: 'i' } },
+                    { 'profileDetails.specialties': { $regex: specialty, $options: 'i' } }
+                ]
+            };
+            console.log('[symptomChecker] Specialty:', specialty);
+            console.log('[symptomChecker] Query:', JSON.stringify(query, null, 2));
+            const doctors = await Doctor.find(query).limit(5).select('name profileDetails city rating numReviews');
+            console.log('[symptomChecker] Found doctors:', doctors.length);
 
             if (doctors.length > 0) {
                 return res.json({
@@ -68,6 +66,5 @@ const symptomChecker = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    symptomChecker,
-    smartChatHandler,
+  symptomChecker
 };

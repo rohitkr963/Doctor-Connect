@@ -17,6 +17,18 @@ const NotificationsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [deletingId, setDeletingId] = useState(null);
+    // Ensure token is loaded from localStorage if context is empty (fixes 401 after refresh)
+    useEffect(() => {
+        if (!auth?.token) {
+            const storedAuth = localStorage.getItem('auth');
+            if (storedAuth) {
+                try {
+                    const parsed = JSON.parse(storedAuth);
+                    if (parsed?.token && setAuth) setAuth(parsed);
+                } catch {}
+            }
+        }
+    }, [auth, setAuth]);
     // Delete notification handler with animation
     const handleDelete = async (id) => {
         setDeletingId(id);
