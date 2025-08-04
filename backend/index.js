@@ -6,17 +6,6 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Connect DB
-connectDB();
-
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static('uploads'));
-
-// Routes
 const doctorRoutes = require('./routes/doctorRoutes');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
@@ -26,12 +15,27 @@ const chatbotRoutes = require('./routes/chatbotRoutes');
 const doctorChatbotRoutes = require('./routes/doctorChatbotRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 
-// Root test route
-app.get('/', (req, res) => {
-  res.send('<h1>Doctor Connect Backend is Running!</h1>');
+connectDB();
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
 });
 
-// API Routes
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('Doctor Connect Backend is Running!');
+});
+
+// Routes
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
@@ -41,25 +45,14 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/ai', doctorChatbotRoutes);
 app.use('/api/documents', documentRoutes);
 
-// Socket.io setup
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
-
+// Socket.io
 const userSockets = {};
-
 io.on('connection', (socket) => {
   socket.on('register', (userId) => {
     userSockets[userId] = socket.id;
   });
 
-  socket.on('joinRoom', ({ room }) => {
-    socket.join(room);
-  });
+  socket.on('joinRoom', ({ room }) => socket.join(room));
 
   socket.on('sendMessage', (data) => {
     io.to(data.room).emit('receiveMessage', data);
@@ -69,15 +62,11 @@ io.on('connection', (socket) => {
     for (const [userId, id] of Object.entries(userSockets)) {
       if (id === socket.id) delete userSockets[userId];
     }
-    console.log('User disconnected:', socket.id);
   });
 
   socket.on('webrtc-offer', ({ to, offer }) => {
     const targetSocketId = userSockets[to];
-    let fromUserId = null;
-    for (const [userId, id] of Object.entries(userSockets)) {
-      if (id === socket.id) fromUserId = userId;
-    }
+    let fromUserId = Object.keys(userSockets).find(key => userSockets[key] === socket.id);
     if (targetSocketId) {
       io.to(targetSocketId).emit('webrtc-offer', { from: fromUserId, offer });
     }
@@ -115,11 +104,10 @@ io.on('connection', (socket) => {
   });
 });
 
-// Make io accessible in routes
 app.set('io', io);
 app.set('userSockets', userSockets);
 
-// Server listen
+// Final listen (important line for Railway)
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
