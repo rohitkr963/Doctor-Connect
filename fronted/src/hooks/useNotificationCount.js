@@ -7,6 +7,7 @@ export default function useNotificationCount(token) {
 
   useEffect(() => {
     if (!token || typeof token !== 'string' || token.trim() === '') return;
+
     let userId = null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -15,7 +16,7 @@ export default function useNotificationCount(token) {
 
     const fetchCount = async () => {
       try {
-        const res = await fetch('/api/users/notifications', {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/notifications`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.status === 401) {
@@ -30,19 +31,24 @@ export default function useNotificationCount(token) {
         setCount(0);
       }
     };
+
     fetchCount();
     const interval = setInterval(fetchCount, 10000);
 
     if (!socketRef.current) {
-      socketRef.current = io(`${process.env.REACT_APP_API_BASE_URL}
-`);
+      socketRef.current = io(process.env.REACT_APP_SOCKET_URL, {
+        transports: ['websocket']
+      });
+
       socketRef.current.on('connect', () => {
         if (userId) socketRef.current.emit('register', userId);
       });
+
       socketRef.current.on('newNotification', () => {
         fetchCount();
       });
     }
+
     return () => {
       clearInterval(interval);
       if (socketRef.current) {
