@@ -3,8 +3,20 @@ require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 
-// Routes ko import karna
+// Connect DB
+connectDB();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
+// Routes
 const doctorRoutes = require('./routes/doctorRoutes');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
@@ -14,29 +26,12 @@ const chatbotRoutes = require('./routes/chatbotRoutes');
 const doctorChatbotRoutes = require('./routes/doctorChatbotRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 
-
-
-// --- Socket.io Setup ---
-connectDB();
-
-const app = express();
-
-// Middlewares
-app.use(cors());
-app.use(express.json());
-// Serve uploads folder as static
-app.use('/uploads', express.static('uploads'));
-
-
-const PORT = process.env.PORT || 5000;
-const { Server } = require('socket.io');
-
-// Test route
+// Root test route
 app.get('/', (req, res) => {
   res.send('<h1>Doctor Connect Backend is Running!</h1>');
 });
 
-// --- API Routes ---
+// API Routes
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
@@ -46,33 +41,27 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/ai', doctorChatbotRoutes);
 app.use('/api/documents', documentRoutes);
 
-// --- Socket.io Setup ---
-const http = require('http');
+// Socket.io setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST']
-  }
+    methods: ['GET', 'POST'],
+  },
 });
 
-// Store user sockets
 const userSockets = {};
 
 io.on('connection', (socket) => {
-  // Listen for user to join with their userId
   socket.on('register', (userId) => {
     userSockets[userId] = socket.id;
   });
 
-  // Real-time chat: join room for doctor-patient chat
   socket.on('joinRoom', ({ room }) => {
     socket.join(room);
   });
 
-  // Real-time chat: send message to room
   socket.on('sendMessage', (data) => {
-    // Broadcast to all users in the room
     io.to(data.room).emit('receiveMessage', data);
   });
 
@@ -83,10 +72,8 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 
-  // WebRTC signaling relay
   socket.on('webrtc-offer', ({ to, offer }) => {
     const targetSocketId = userSockets[to];
-    // Find sender's userId from userSockets mapping
     let fromUserId = null;
     for (const [userId, id] of Object.entries(userSockets)) {
       if (id === socket.id) fromUserId = userId;
@@ -95,20 +82,21 @@ io.on('connection', (socket) => {
       io.to(targetSocketId).emit('webrtc-offer', { from: fromUserId, offer });
     }
   });
-  // --- ADD: Video Call Request relay ---
+
   socket.on('videoCallRequest', (data) => {
     const targetSocketId = userSockets[data.to];
-    console.log('videoCallRequest received from', data.from, 'to', data.to, 'targetSocketId:', targetSocketId);
     if (targetSocketId) {
       io.to(targetSocketId).emit('videoCallRequest', data);
     }
   });
+
   socket.on('webrtc-answer', ({ to, answer }) => {
     const targetSocketId = userSockets[to];
     if (targetSocketId) {
       io.to(targetSocketId).emit('webrtc-answer', { answer });
     }
   });
+
   socket.on('webrtc-candidate', ({ to, candidate }) => {
     const targetSocketId = userSockets[to];
     if (targetSocketId) {
@@ -116,25 +104,23 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Video Call Accepted relay
   socket.on('videoCallAccepted', ({ to, from }) => {
     const targetSocketId = userSockets[to];
     if (targetSocketId) {
       io.to(targetSocketId).emit('videoCallAccepted');
     }
-    // Doctor (receiver) ko bhi apne client par event bhejo
     if (userSockets[from]) {
       io.to(userSockets[from]).emit('videoCallAccepted');
     }
   });
 });
 
-// Make io accessible in routes/controllers
+// Make io accessible in routes
 app.set('io', io);
 app.set('userSockets', userSockets);
 
-// Start the server with Socket.io
-
-app.listen(PORT, '0.0.0.0', () => {
+// Server listen
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
