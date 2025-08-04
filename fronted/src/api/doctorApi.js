@@ -1,8 +1,7 @@
 // src/api/doctorApi.js
 import axios from 'axios';
-import server from '../environment'; // Server environment se URL import karte hain
 
-const API_URL = `${server}/api/doctors`; // Backend doctor APIs ka base URL
+const API_URL = 'http://localhost:5000/api/doctors'; // Backend doctor APIs ka base URL
 
 // Helper function to set authorization header
 const getConfig = (token = null) => { // token optional banaya

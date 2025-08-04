@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import server from '../environment'; // Adjust the import path as necessary
 
 const DoctorAppointmentsPage = () => {
   const { auth } = useContext(AuthContext);
@@ -20,7 +19,7 @@ const DoctorAppointmentsPage = () => {
       try {
         // Replace with your actual backend API endpoint
         const res = await axios.get(
-          `${server}/api/doctors/${auth._id}/appointments`,
+          `http://localhost:5000/api/doctors/${auth._id}/appointments`,
           { headers: { Authorization: `Bearer ${auth.token}` } }
         );
         setAppointments(res.data);

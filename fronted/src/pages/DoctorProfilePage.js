@@ -4,7 +4,7 @@
   import { submitDoctorReviewAPI, editDoctorReviewAPI, deleteDoctorReviewAPI, bookAppointmentAPI } from '../api/userApi';
   import axios from 'axios';
   import AuthContext from '../context/AuthContext';
-  import server from '../environment'; // Adjust the import path as necessary
+
 
 
   const DoctorProfilePage = () => {
@@ -118,7 +118,7 @@
         // Check if user has active appointment with this doctor
         if (auth && auth.type === 'user') {
           try {
-            const res = await axios.get(`${server}/api/appointments/my`, {
+            const res = await axios.get(`http://localhost:5000/api/appointments/my`, {
               headers: { Authorization: `Bearer ${auth.token}` }
             });
             // Find appointment with this doctor
@@ -182,7 +182,7 @@
       setSymptoms({ problem: "", duration: "", extra: "" });
       // Immediately re-fetch appointments to update chat button
       try {
-        const res = await axios.get(`${server}/api/appointments/my`, {
+        const res = await axios.get(`http://localhost:5000/api/appointments/my`, {
           headers: { Authorization: `Bearer ${auth.token}` }
         });
         const found = res.data.find(a => a.doctor === doctorId);

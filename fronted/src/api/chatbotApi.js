@@ -1,7 +1,6 @@
 import axios from 'axios';
-import server from '../environment';
 
-const API_URL = `${server}/api/chatbot`;
+const API_URL = 'http://localhost:5000/api/chatbot';
 
 /**
  * AI chatbot se baat karne ke liye API call karta hai.

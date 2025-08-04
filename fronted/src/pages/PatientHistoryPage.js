@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import server from '../environment'; // Adjust the import path as necessary
 
 const PatientHistoryPage = () => {
   const { auth } = useContext(AuthContext);
@@ -21,7 +20,7 @@ const PatientHistoryPage = () => {
       setLoading(true);
       try {
         const config = { headers: { Authorization: `Bearer ${auth.token}` } };
-        const res = await axios.get(`${server}/api/doctors/patients/history`, config);
+        const res = await axios.get('http://localhost:5000/api/doctors/patients/history', config);
         setPatients(res.data);
       } catch (err) {
         setError('Could not load patient history.');
@@ -68,7 +67,7 @@ const PatientHistoryPage = () => {
                         setDeletingId(id);
                         try {
                           const config = { headers: { Authorization: `Bearer ${auth.token}` } };
-                          await axios.delete(`${server}/api/doctors/patients/history/${id}`, config);
+                          await axios.delete(`http://localhost:5000/api/doctors/patients/history/${id}`, config);
                         } catch {
                           setError('Delete nahi ho paaya.');
                           setDeletingId(null);
