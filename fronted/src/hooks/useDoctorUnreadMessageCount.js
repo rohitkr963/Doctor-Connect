@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-
+import server from '../environment';
 export default function useDoctorUnreadMessageCount(token, userType) {
   const [count, setCount] = useState(0);
 
@@ -9,7 +9,7 @@ export default function useDoctorUnreadMessageCount(token, userType) {
       setCount(0);
       return;
     }
-    const endpoint = 'http://localhost:5000/api/messages/doctor/unread-count';
+    const endpoint = `${server}/api/messages/doctor/unread-count`;
     const fetchCount = async () => {
       try {
         const res = await fetch(endpoint, {

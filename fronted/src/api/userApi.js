@@ -1,10 +1,11 @@
 import axios from 'axios';
+import server from '../environment';
 /**
  * Logged-in user ki notifications laata hai.
  */
 export const fetchNotificationsAPI = async (token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get('http://localhost:5000/api/users/notifications', config);
+    const response = await axios.get(`${server}/api/users/notifications`, config);
     return response.data;
 };
 // Review APIs (axios based)
@@ -12,7 +13,7 @@ export const fetchDoctorReviewsAPI = async (doctorId, token) => {
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    const response = await axios.get(`http://localhost:5000/api/doctors/${doctorId}/reviews`, config);
+    const response = await axios.get(`${server}/api/doctors/${doctorId}/reviews`, config);
     return response.data;
 };
 
@@ -23,7 +24,7 @@ export const submitDoctorReviewAPI = async (doctorId, review, token) => {
             Authorization: `Bearer ${token}`,
         }
     };
-    const response = await axios.post(`http://localhost:5000/api/doctors/${doctorId}/reviews`, review, config);
+    const response = await axios.post(`${server}/api/doctors/${doctorId}/reviews`, review, config);
     return response.data;
 };
 
@@ -34,7 +35,7 @@ export const editDoctorReviewAPI = async (doctorId, reviewId, review, token) => 
             Authorization: `Bearer ${token}`,
         }
     };
-    const response = await axios.put(`http://localhost:5000/api/doctors/${doctorId}/reviews/${reviewId}`, review, config);
+    const response = await axios.put(`${server}/api/doctors/${doctorId}/reviews/${reviewId}`, review, config);
     return response.data;
 };
 
@@ -42,13 +43,13 @@ export const deleteDoctorReviewAPI = async (doctorId, reviewId, token) => {
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    const response = await axios.delete(`http://localhost:5000/api/doctors/${doctorId}/reviews/${reviewId}`, config);
+    const response = await axios.delete(`${server}/api/doctors/${doctorId}/reviews/${reviewId}`, config);
     return response.data;
 };
 
 // User ke liye backend server ka base URL
-const USER_API_URL = 'http://localhost:5000/api/users';
-const DOCTOR_API_URL = 'http://localhost:5000/api/doctors';
+const USER_API_URL = `${server}/api/users`;
+const DOCTOR_API_URL = `${server}/api/doctors`;
 
 // Helper function to set authorization header and content type
 const getConfig = (token, isFormData = false) => {
@@ -209,7 +210,7 @@ export const bookAppointmentAPI = async ({ doctorId, date, time, fee, symptoms }
         }
     };
     const response = await axios.post(
-        `http://localhost:5000/api/doctors/${doctorId}/book-appointment`,
+        `${server}/api/doctors/${doctorId}/book-appointment`,
         { date, time, fee, symptoms },
         config
     );
