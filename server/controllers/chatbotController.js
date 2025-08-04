@@ -4,9 +4,6 @@ const axios = require('axios');
 const Doctor = require('../models/Doctor');
 
 
-// Smart chat handler: forwards to Python LangChain service
-// Doctor Search Handler: finds logged-in doctors by name, specialty, or cit
-
 const symptomChecker = asyncHandler(async (req, res) => {
     const { message } = req.body;
     if (!message) {
