@@ -138,7 +138,7 @@ useEffect(() => {
 
   useEffect(() => {
     // Connect socket
-    socketRef.current = io(SOCKET_URL);
+    socketRef.current = io(SOCKET_URL, { transports: ['websocket'] });
     // Register user (doctor or patient)
     socketRef.current.emit('register', myId);
     // Join room
