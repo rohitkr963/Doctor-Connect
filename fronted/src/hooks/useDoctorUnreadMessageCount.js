@@ -9,7 +9,8 @@ export default function useDoctorUnreadMessageCount(token, userType) {
       setCount(0);
       return;
     }
-    const endpoint = 'http://localhost:5000/api/messages/doctor/unread-count';
+    const endpoint = `${process.env.REACT_APP_API_BASE_URL}
+/api/messages/doctor/unread-count`;
     const fetchCount = async () => {
       try {
         const res = await fetch(endpoint, {

@@ -89,7 +89,8 @@ const NotificationsPage = () => {
 
         // Socket.io setup
         if (!socketRef.current) {
-            socketRef.current = io('http://localhost:5000');
+            socketRef.current = io(`${process.env.REACT_APP_API_BASE_URL}
+`);
             socketRef.current.on('connect', () => {
                 // Register userId for targeted notifications
                 socketRef.current.emit('register', auth.userId || auth._id);

@@ -75,7 +75,8 @@ const DoctorDashboard = () => {
         },
       };
       // Update availability
-      const response = await fetch('http://localhost:5000/api/doctors/availability', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/doctors/availability`, {
         method: 'PUT',
         headers: config.headers,
         body: JSON.stringify({ availability: availabilityArr }),
@@ -85,7 +86,8 @@ const DoctorDashboard = () => {
       setDoctorProfile(prev => ({...prev, availability: availabilityArr }));
 
       // 2. Update currentStatus field as well
-      const statusResponse = await fetch('http://localhost:5000/api/doctors/status', {
+      const statusResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/doctors/status`, {
         method: 'PUT',
         headers: config.headers,
         body: JSON.stringify({ currentStatus: newStatus }),

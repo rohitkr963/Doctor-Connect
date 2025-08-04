@@ -29,7 +29,8 @@ const Navbar = () => {
     e.preventDefault();
     if (!auth?.token) return;
     try {
-      const res = await fetch('http://localhost:5000/api/users/notifications/read-all', {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/users/notifications/read-all`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${auth.token}` },
       });

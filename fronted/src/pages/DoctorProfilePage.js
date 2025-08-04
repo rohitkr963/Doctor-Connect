@@ -118,7 +118,8 @@
         // Check if user has active appointment with this doctor
         if (auth && auth.type === 'user') {
           try {
-            const res = await axios.get(`http://localhost:5000/api/appointments/my`, {
+            const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}
+/api/appointments/my`, {
               headers: { Authorization: `Bearer ${auth.token}` }
             });
             // Find appointment with this doctor
@@ -182,7 +183,8 @@
       setSymptoms({ problem: "", duration: "", extra: "" });
       // Immediately re-fetch appointments to update chat button
       try {
-        const res = await axios.get(`http://localhost:5000/api/appointments/my`, {
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}
+/api/appointments/my`, {
           headers: { Authorization: `Bearer ${auth.token}` }
         });
         const found = res.data.find(a => a.doctor === doctorId);

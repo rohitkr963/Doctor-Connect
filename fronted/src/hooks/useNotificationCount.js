@@ -34,7 +34,8 @@ export default function useNotificationCount(token) {
     const interval = setInterval(fetchCount, 10000);
 
     if (!socketRef.current) {
-      socketRef.current = io('http://localhost:5000');
+      socketRef.current = io(`${process.env.REACT_APP_API_BASE_URL}
+`);
       socketRef.current.on('connect', () => {
         if (userId) socketRef.current.emit('register', userId);
       });

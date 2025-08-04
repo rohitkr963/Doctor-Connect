@@ -19,7 +19,8 @@ const DoctorAppointmentsPage = () => {
       try {
         // Replace with your actual backend API endpoint
         const res = await axios.get(
-          `http://localhost:5000/api/doctors/${auth._id}/appointments`,
+          `${process.env.REACT_APP_API_BASE_URL}
+/api/doctors/${auth._id}/appointments`,
           { headers: { Authorization: `Bearer ${auth.token}` } }
         );
         setAppointments(res.data);

@@ -1,7 +1,7 @@
 // src/api/doctorApi.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/doctors'; // Backend doctor APIs ka base URL
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/doctors`; // Backend doctor APIs ka base URL
 
 // Helper function to set authorization header
 const getConfig = (token = null) => { // token optional banaya

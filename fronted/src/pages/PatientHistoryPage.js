@@ -20,7 +20,8 @@ const PatientHistoryPage = () => {
       setLoading(true);
       try {
         const config = { headers: { Authorization: `Bearer ${auth.token}` } };
-        const res = await axios.get('http://localhost:5000/api/doctors/patients/history', config);
+        const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}
+/api/doctors/patients/history`, config);
         setPatients(res.data);
       } catch (err) {
         setError('Could not load patient history.');
@@ -67,7 +68,8 @@ const PatientHistoryPage = () => {
                         setDeletingId(id);
                         try {
                           const config = { headers: { Authorization: `Bearer ${auth.token}` } };
-                          await axios.delete(`http://localhost:5000/api/doctors/patients/history/${id}`, config);
+                          await axios.delete(`${process.env.REACT_APP_API_BASE_URL}
+/api/doctors/patients/history/${id}`, config);
                         } catch {
                           setError('Delete nahi ho paaya.');
                           setDeletingId(null);

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/chatbot';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/api/chatbot`;
 
 /**
  * AI chatbot se baat karne ke liye API call karta hai.

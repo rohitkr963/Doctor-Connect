@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // For waveform rendering
 // ...existing code...
 import io from 'socket.io-client';
-const SOCKET_URL = 'http://localhost:5000'; // Change if deployed
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 const ChatModal = ({ doctor, patient, appointmentId }) => {
   // All hooks at the very top before any logic
@@ -659,7 +659,9 @@ const startWebRTC = React.useCallback(async (isCaller) => {
                     {/* Audio bubble uses its own style */}
                     {msg.audioUrl ? (
                       <AudioMessageBubble
-                        audioUrl={msg.audioUrl.startsWith('/uploads/') ? `http://localhost:5000${msg.audioUrl}` : msg.audioUrl}
+                        audioUrl={msg.audioUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_API_BASE_URL}
+
+${msg.audioUrl}` : msg.audioUrl}
                         avatar={isMine ? (doctor.avatarUrl || doctor.profilePic) : (patient.avatarUrl || patient.profilePic)}
                         isMine={isMine}
                       />
@@ -812,11 +814,14 @@ const AudioMessageBubble = ({ audioUrl, avatar, isMine }) => {
   let fixedAudioUrl = audioUrl;
   if (audioUrl && audioUrl.startsWith('/uploads/')) {
     if (!audioUrl.startsWith('http://') && !audioUrl.startsWith('https://')) {
-      fixedAudioUrl = `http://localhost:5000${audioUrl}`;
+      fixedAudioUrl = `${process.env.REACT_APP_API_BASE_URL}
+${audioUrl}`;
     }
   }
   // Remove any accidental double slashes
-  fixedAudioUrl = fixedAudioUrl.replace('http://localhost:5000//', 'http://localhost:5000/');
+  fixedAudioUrl = fixedAudioUrl.replace(`${process.env.REACT_APP_API_BASE_URL}
+//`, `${process.env.REACT_APP_API_BASE_URL}
+`);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
