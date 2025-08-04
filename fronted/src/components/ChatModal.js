@@ -108,7 +108,7 @@ useEffect(() => {
         formData.append('receiverModel', doctor.isCurrentDoctor ? 'User' : 'Doctor');
         formData.append('appointmentId', appointmentId);
         const token = doctor.isCurrentDoctor ? doctor.token : patient.token;
-        const res = await fetch('/api/messages/upload-audio', {
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/upload-audio`, {
           method: 'POST',
           headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -149,7 +149,7 @@ useEffect(() => {
       // No auto-play, just show audio UI
     });
     // Fetch old messages (API call)
-    fetch(`/api/messages/${doctor._id}/${patient._id}`,
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/${doctor._id}/${patient._id}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ useEffect(() => {
     // Real-time emit
     socketRef.current.emit('sendMessage', msg);
     // Save to DB
-    await fetch('/api/messages', {
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ useEffect(() => {
     const userId = patient._id;
     const token = doctor.isCurrentDoctor ? doctor.token : patient.token;
     try {
-      const res = await fetch(`/api/messages/clear/${doctorId}/${userId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/clear/${doctorId}/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -782,7 +782,7 @@ ${msg.audioUrl}` : msg.audioUrl}
               formData.append('receiverModel', doctor.isCurrentDoctor ? 'User' : 'Doctor');
               formData.append('appointmentId', appointmentId);
               const token = doctor.isCurrentDoctor ? doctor.token : patient.token;
-              const res = await fetch('/api/messages/upload', {
+              const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/upload`, {
                 method: 'POST',
                 headers: {
                   ...(token ? { 'Authorization': `Bearer ${token}` } : {})

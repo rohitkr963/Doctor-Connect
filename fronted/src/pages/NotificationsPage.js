@@ -35,7 +35,7 @@ const NotificationsPage = () => {
         // Wait for animation to finish before removing
         setTimeout(async () => {
             try {
-                const res = await fetch(`/api/users/notifications/${id}`, {
+                const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/notifications/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
@@ -66,7 +66,7 @@ const NotificationsPage = () => {
         const fetchNotifications = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/users/notifications', {
+                const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/notifications`, {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`,
                     },
@@ -105,7 +105,7 @@ const NotificationsPage = () => {
                 socketRef.current = null;
             }
         };
-    }, [auth, navigate]);
+    }, [auth, setAuth, navigate]);
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-blue-700 text-xl animate-fade-in-up">Loading notifications...</div>;
     if (error) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-red-500 text-xl animate-fade-in-up">Error: {error}</div>;
