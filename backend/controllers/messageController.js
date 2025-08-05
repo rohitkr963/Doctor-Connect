@@ -20,6 +20,11 @@ const User = require('../models/User');
 exports.getDoctorChatUsers = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
+    // Validate doctorId is a valid MongoDB ObjectId
+    if (!doctorId || !doctorId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ error: 'Invalid doctorId format. Must be a 24-character hex string.' });
+    }
+
     // Find all messages where doctor is sender or receiver
     const messages = await Message.find({
       $or: [
@@ -27,16 +32,42 @@ exports.getDoctorChatUsers = async (req, res) => {
         { receiverId: doctorId }
       ]
     });
-    // Get unique user IDs (not doctor)
-    const userIds = [
+    // Get unique user IDs (not doctor) from messages
+    const messagedUserIds = [
       ...new Set(
         messages
           .map(m => m.senderId.toString() === doctorId ? m.receiverId.toString() : m.senderId.toString())
           .filter(id => id !== doctorId)
       )
     ];
+
+    // Get users who have ever booked or queued with the doctor
+    const doctor = await require('../models/Doctor').findById(doctorId).populate({
+      path: 'queue.patientId',
+      select: 'name _id profilePic email'
+    });
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+    // Get patientHistory if available
+    let historyUserIds = [];
+    if (doctor && Array.isArray(doctor.patientHistory)) {
+      historyUserIds = doctor.patientHistory.map(id => id.toString());
+    }
+    // Get queued user IDs
+    let queuedUserIds = [];
+    if (doctor && Array.isArray(doctor.queue)) {
+      queuedUserIds = doctor.queue.map(entry => entry.patientId && entry.patientId._id ? entry.patientId._id.toString() : (entry.patientId ? entry.patientId.toString() : null)).filter(Boolean);
+    }
+
+    // Combine all user IDs
+    const allUserIds = Array.from(new Set([...messagedUserIds, ...queuedUserIds, ...historyUserIds]));
+
     // Fetch user details (name, _id, profilePic, email)
-    const users = await User.find({ _id: { $in: userIds } }, 'name _id profilePic email');
+    let users = [];
+    if (allUserIds.length > 0) {
+      users = await User.find({ _id: { $in: allUserIds } }, 'name _id profilePic email');
+    }
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch user list' });
@@ -47,6 +78,10 @@ const Message = require('../models/Message');
 exports.sendMessage = async (req, res) => {
   try {
     const { senderId, receiverId, message, appointmentId } = req.body;
+    // Validate required fields
+    if (!senderId || !receiverId || (!message && !req.body.imageUrl && !req.body.audioUrl)) {
+      return res.status(400).json({ error: 'Missing senderId, receiverId, or message content.' });
+    }
     // Detect sender/receiver model
     let senderModel = 'User';
     let receiverModel = 'User';
@@ -58,7 +93,8 @@ exports.sendMessage = async (req, res) => {
     await newMsg.save();
     res.status(201).json(newMsg);
   } catch (err) {
-    res.status(500).json({ error: 'Message send failed' });
+    console.error('Message send error:', err);
+    res.status(500).json({ error: 'Message send failed', details: err.message });
   }
 };
 

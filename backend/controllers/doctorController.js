@@ -487,6 +487,8 @@ const getDoctorById = asyncHandler(async (req, res) => { // ✅ asyncHandler se 
             city: doctor.city,
             address: doctor.address,
             profileDetails: doctor.profileDetails,
+            profilePic: doctor.profilePic || (doctor.profileDetails && doctor.profileDetails.profilePicture) || '',
+            profilePicture: doctor.profilePicture || (doctor.profileDetails && doctor.profileDetails.profilePicture) || '',
             availability: Array.isArray(doctor.availability) && doctor.availability.length > 0 ? doctor.availability : [],
             reviews: doctor.reviews,
             rating: doctor.rating,
