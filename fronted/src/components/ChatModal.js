@@ -135,7 +135,6 @@ useEffect(() => {
       setIsRecording(false);
     }
   };
-
   useEffect(() => {
     // Connect socket
     socketRef.current = io(SOCKET_URL, { transports: ['websocket'] });

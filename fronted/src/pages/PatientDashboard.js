@@ -4,7 +4,7 @@ import AuthContext from '../context/AuthContext';
 
 // API se data fetch karne ke liye
 const fetchUpcomingAppointments = async (token) => {
-  const res = await fetch('/api/users/my-queues', {
+  const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/my-queues`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Could not fetch upcoming appointments');
@@ -12,7 +12,7 @@ const fetchUpcomingAppointments = async (token) => {
 };
 
 const fetchPastAppointments = async (token) => {
-  const res = await fetch('/api/users/past-appointments', {
+  const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/users/past-appointments`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Could not fetch past appointments');
@@ -160,7 +160,7 @@ const PatientDashboard = () => {
                                 </div>
                             ))
                         )
-                    )}
+                    }}
 
                     {activeTab === 'doctors' && (
                         myDoctors.length === 0 ? (
