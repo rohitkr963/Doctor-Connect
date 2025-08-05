@@ -17,40 +17,37 @@ const DoctorChatPage = () => {
       navigate('/login/doctor');
       return;
     }
-    axios.get(`/api/doctors/${auth._id}`, {
-      headers: { Authorization: `Bearer ${auth.token}` }
-    })
+    // Validate doctorId is a valid MongoDB ObjectId
+    const doctorId = auth._id;
+    if (!doctorId || !doctorId.match(/^[0-9a-fA-F]{24}$/)) {
+      setDoctor(null);
+      setUserList([]);
+      return;
+    }
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/doctors/${doctorId}`)
       .then(res => setDoctor({ ...res.data, isCurrentDoctor: true, token: auth.token }))
-      .catch((err) => {
-        setDoctor(null);
-        console.error('Doctor fetch error:', err);
-      });
+      .catch(() => setDoctor(null));
 
-    axios.get(`/api/messages/users/${auth._id}`, {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/messages/users/${doctorId}`, {
       headers: { Authorization: `Bearer ${auth.token}` }
     })
       .then(async res => {
-        const users = Array.isArray(res.data) ? res.data : [];
-        setUserList(users);
+        setUserList(res.data);
         // Fetch unread count for each user
         const counts = {};
-        for (const user of users) {
+        for (const user of res.data) {
           try {
-            const resp = await axios.get(`/api/messages/unread-count/${auth._id}/${user._id}`, {
+            const resp = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/messages/unread-count/${doctorId}/${user._id}`, {
               headers: { Authorization: `Bearer ${auth.token}` }
             });
             counts[user._id] = resp.data.count || 0;
-          } catch (err) {
+          } catch {
             counts[user._id] = 0;
-            console.error('Unread count error:', err);
           }
         }
         setUserUnreadCounts(counts);
       })
-      .catch((err) => {
-        setUserList([]);
-        console.error('User list fetch error:', err);
-      });
+      .catch(() => setUserList([]));
   }, [auth, navigate]);
 
   if (!auth || auth.type !== 'doctor') return null;
@@ -71,8 +68,17 @@ const DoctorChatPage = () => {
                   style={{ boxShadow: selectedUser && selectedUser._id === user._id ? '0 4px 24px 0 rgba(13, 148, 136, 0.12)' : undefined }}
                   onClick={async () => {
                     setSelectedUser(user);
+                    // Validate doctorId and userId before API call
+                    const doctorId = auth._id;
+                    const userId = user._id;
+                    const isValidObjectId = id => typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/);
+                    if (!isValidObjectId(doctorId) || !isValidObjectId(userId)) {
+                      // Optionally show a warning or skip API call
+                      setUserUnreadCounts(prev => ({ ...prev, [user._id]: 0 }));
+                      return;
+                    }
                     try {
-                      await axios.put(`/api/messages/mark-read/${auth._id}/${user._id}`, {}, {
+                      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/messages/mark-read/${doctorId}/${userId}`, {}, {
                         headers: { Authorization: `Bearer ${auth.token}` }
                       });
                       setUserUnreadCounts(prev => ({ ...prev, [user._id]: 0 }));

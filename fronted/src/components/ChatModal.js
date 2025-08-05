@@ -31,7 +31,7 @@ const ChatModal = ({ doctor, patient, appointmentId }) => {
   const myAvatar = doctor.isCurrentDoctor ? (doctor.avatarUrl || doctor.profilePic) : (patient.avatarUrl || patient.profilePic);
   const peerId = doctor.isCurrentDoctor ? patient._id : doctor._id;
   const peerName = doctor.isCurrentDoctor ? patient.name : doctor.name;
-  const peerAvatar = doctor.isCurrentDoctor ? (patient.avatarUrl || patient.profilePic) : (doctor.avatarUrl || doctor.profilePic);
+  // Removed unused peerAvatar
 
   // Robust: Always attach local stream to local video element after any modal/callActive change or remount
 
@@ -203,29 +203,19 @@ useEffect(() => {
           room,
           appointmentId
         };
-    // Log payload for debugging
-    console.log('Sending message payload:', msg);
     // Real-time emit
     socketRef.current.emit('sendMessage', msg);
     // Save to DB
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...((doctor.isCurrentDoctor && doctor.token)
-            ? { 'Authorization': `Bearer ${doctor.token}` }
-            : (patient.token ? { 'Authorization': `Bearer ${patient.token}` } : {}))
-        },
-        body: JSON.stringify(msg)
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('Message send error:', errorData);
-      }
-    } catch (err) {
-      console.error('Fetch error:', err);
-    }
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...((doctor.isCurrentDoctor && doctor.token)
+          ? { 'Authorization': `Bearer ${doctor.token}` }
+          : (patient.token ? { 'Authorization': `Bearer ${patient.token}` } : {}))
+      },
+      body: JSON.stringify(msg)
+    });
     setInput('');
   };
 
@@ -594,52 +584,7 @@ const startWebRTC = React.useCallback(async (isCaller) => {
         </div>
       </div>
 
-      {/* Incoming/Active Call Modal Skeleton */}
-      {showCallModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center gap-4 min-w-[320px]">
-            <img src={incomingCall ? incomingCall.avatar : peerAvatar} alt="avatar" className="w-16 h-16 rounded-full border-4 border-teal-400 object-cover" />
-            <div className="font-bold text-lg text-teal-700">Video Call</div>
-            <div className="flex gap-4 items-center mb-2">
-              {/* Local video always visible when call modal open */}
-              <div>
-                <video ref={localVideoRef} autoPlay muted playsInline className="w-32 h-24 rounded-lg border-2 border-teal-400 bg-black" />
-                <div className="text-xs text-center mt-1">You</div>
-              </div>
-              {/* Remote video only after accepted */}
-              {callActive && (
-                <div>
-                  <video ref={remoteVideoRef} autoPlay playsInline className="w-32 h-24 rounded-lg border-2 border-gray-400 bg-black" />
-                  <div className="text-xs text-center mt-1">{peerName}</div>
-                </div>
-              )}
-            </div>
-            <div className="text-gray-600 text-sm mb-2">
-              {incomingCall
-                ? `Incoming call from ${incomingCall.name}`
-                : callActive
-                  ? `Connecting...`
-                  : `Waiting for ${peerName} to accept...`}
-            </div>
-            <div className="flex gap-4 mt-2">
-              {incomingCall ? (
-                <>
-                  <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow transition text-sm" onClick={handleAcceptCall}>
-                    Accept
-                  </button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-bold shadow transition text-sm" onClick={handleRejectCall}>
-                    Reject
-                  </button>
-                </>
-              ) : (
-                <button className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-bold shadow transition text-sm" onClick={handleEndCall}>
-                  Cancel
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ...existing code... */}
 
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-4 py-4" style={{ minHeight: 0 }}>
@@ -657,8 +602,13 @@ const startWebRTC = React.useCallback(async (isCaller) => {
             const isMine = msg.senderId === myId || (msg.senderId && msg.senderId._id === myId);
             // Bubble tail position
             const tailClass = isMine ? 'bubble-tail-right' : 'bubble-tail-left';
+            // Fix image URL for /uploads/ paths
+            let imageUrl = msg.imageUrl;
+            if (imageUrl && imageUrl.startsWith('/uploads/')) {
+              imageUrl = `${process.env.REACT_APP_API_BASE_URL}${imageUrl}`;
+            }
             return (
-              <div key={idx} className={`mb-2 flex ${isMine ? 'justify-end' : 'justify-start'} animate-fade-in-up`}> 
+              <div key={idx} className={`mb-2 flex ${isMine ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
                 <div className="flex items-end gap-2">
                   {/* Avatar for other user */}
                   {!isMine && (
@@ -668,16 +618,14 @@ const startWebRTC = React.useCallback(async (isCaller) => {
                     {/* Audio bubble uses its own style */}
                     {msg.audioUrl ? (
                       <AudioMessageBubble
-                        audioUrl={msg.audioUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_API_BASE_URL}
-
-${msg.audioUrl}` : msg.audioUrl}
+                        audioUrl={msg.audioUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_API_BASE_URL}${msg.audioUrl}` : msg.audioUrl}
                         avatar={isMine ? (doctor.avatarUrl || doctor.profilePic) : (patient.avatarUrl || patient.profilePic)}
                         isMine={isMine}
                       />
                     ) : (
                       <div className={`chat-bubble ${isMine ? 'mine' : 'theirs'} ${tailClass}`}>
-                        {msg.imageUrl ? (
-                          <img src={msg.imageUrl} alt="chat-img" className="max-w-[180px] max-h-[180px] rounded-lg mb-1" />
+                        {imageUrl ? (
+                          <img src={imageUrl} alt="chat-img" className="max-w-[180px] max-h-[180px] rounded-lg mb-1" />
                         ) : null}
                         <span>{msg.message}</span>
                       </div>

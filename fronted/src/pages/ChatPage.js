@@ -15,15 +15,14 @@ const ChatPage = () => {
 
   useEffect(() => {
     // Fetch doctor details for profile info
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || '';
     const fetchDoctor = async () => {
       try {
-        const res = await axios.get(`/api/doctors/${doctorId}`, {
-          headers: { Authorization: `Bearer ${auth?.token}` }
-        });
+        const res = await axios.get(`${apiBaseUrl}/api/doctors/${doctorId}`);
         setDoctor(res.data);
       } catch (err) {
-        setDoctor({ name: 'Doctor', profileDetails: {} });
-        console.error('Doctor fetch error:', err);
+        // Show a clear error if doctor not found
+        setDoctor(null);
       }
     };
     fetchDoctor();
@@ -35,7 +34,12 @@ const ChatPage = () => {
   }
 
   if (!doctor) {
-    return <div className="flex items-center justify-center min-h-screen">Loading chat...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-500">
+        Doctor not found. Please check the link or try again.<br />
+        (404 error from backend)
+      </div>
+    );
   }
 
   // Premium animated chat background

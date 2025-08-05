@@ -9,14 +9,38 @@ const UserDocumentsPage = () => {
   const [docType, setDocType] = useState('');
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
+  
 
-  // Fetch user's medical records
+  // Fetch user's medical records with robust token guard
   useEffect(() => {
-    axios.get('/api/documents', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}` }
+    const userInfoRaw = localStorage.getItem('userInfo');
+    let token = '';
+    try {
+      token = userInfoRaw ? JSON.parse(userInfoRaw).token : '';
+    } catch {
+      token = '';
+    }
+    if (!token) {
+      setMessage('Please login to view your documents.');
+      setRecords([]);
+      return;
+    }
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/documents`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setRecords(Array.isArray(res.data.records) ? res.data.records : []))
-      .catch(() => setRecords([]));
+      .catch(err => {
+        if (err.response && err.response.status === 401) {
+          setMessage('Session expired. Please login again.');
+          localStorage.removeItem('userInfo');
+          setRecords([]);
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1200);
+        } else {
+          setRecords([]);
+        }
+      });
   }, [uploading]);
 
   // Upload new document
@@ -127,7 +151,7 @@ const UserDocumentsPage = () => {
                   setModalOpen(false);
                   return;
                 }
-                await axios.delete(`/api/documents/${encodeURIComponent(recordToDelete.public_id)}`, {
+                await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/api/documents/${encodeURIComponent(recordToDelete.public_id)}`, {
                   headers: { Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}` }
                 });
                 setRecords(prev => prev.filter(r => r.public_id !== recordToDelete.public_id));
