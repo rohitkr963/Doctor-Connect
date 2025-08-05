@@ -15,12 +15,15 @@ const ChatPage = () => {
 
   useEffect(() => {
     // Fetch doctor details for profile info
-    const fetchDoctor = async ( ) => {
+    const fetchDoctor = async () => {
       try {
-        const res = await axios.get(`/api/doctors/${doctorId}`);
+        const res = await axios.get(`/api/doctors/${doctorId}`, {
+          headers: { Authorization: `Bearer ${auth?.token}` }
+        });
         setDoctor(res.data);
       } catch (err) {
         setDoctor({ name: 'Doctor', profileDetails: {} });
+        console.error('Doctor fetch error:', err);
       }
     };
     fetchDoctor();

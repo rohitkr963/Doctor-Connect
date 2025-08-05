@@ -36,17 +36,22 @@ const UserDocumentsPage = () => {
     formData.append('file', file);
     formData.append('docType', docType);
     try {
-      await axios.post('/api/documents/upload', formData, {
+      const response = await axios.post('/api/documents/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}`
         }
       });
-      setMessage('File uploaded successfully!');
-      setFile(null);
-      setDocType('');
-    } catch {
-      setMessage('Error uploading file.');
+      if (response.data && response.data.success) {
+        setMessage('File uploaded successfully!');
+        setFile(null);
+        setDocType('');
+      } else {
+        setMessage(response.data && response.data.message ? response.data.message : 'Error uploading file.');
+      }
+    } catch (err) {
+      setMessage(err.response?.data?.message || 'Error uploading file.');
+      console.error('Upload error:', err);
     }
     setUploading(false);
   };

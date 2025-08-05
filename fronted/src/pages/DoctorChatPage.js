@@ -17,10 +17,15 @@ const DoctorChatPage = () => {
       navigate('/login/doctor');
       return;
     }
-    axios.get(`/api/doctors/${auth._id}`)
+    axios.get(`/api/doctors/${auth._id}`, {
+      headers: { Authorization: `Bearer ${auth.token}` }
+    })
       .then(res => setDoctor({ ...res.data, isCurrentDoctor: true, token: auth.token }))
-      .catch(() => setDoctor(null));
-      
+      .catch((err) => {
+        setDoctor(null);
+        console.error('Doctor fetch error:', err);
+      });
+
     axios.get(`/api/messages/users/${auth._id}`, {
       headers: { Authorization: `Bearer ${auth.token}` }
     })
@@ -34,13 +39,17 @@ const DoctorChatPage = () => {
               headers: { Authorization: `Bearer ${auth.token}` }
             });
             counts[user._id] = resp.data.count || 0;
-          } catch {
+          } catch (err) {
             counts[user._id] = 0;
+            console.error('Unread count error:', err);
           }
         }
         setUserUnreadCounts(counts);
       })
-      .catch(() => setUserList([]));
+      .catch((err) => {
+        setUserList([]);
+        console.error('User list fetch error:', err);
+      });
   }, [auth, navigate]);
 
   if (!auth || auth.type !== 'doctor') return null;
