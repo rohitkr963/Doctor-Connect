@@ -15,7 +15,7 @@ const UserDocumentsPage = () => {
     axios.get('/api/documents', {
       headers: { Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}` }
     })
-      .then(res => setRecords(res.data.records))
+      .then(res => setRecords(Array.isArray(res.data.records) ? res.data.records : []))
       .catch(() => setRecords([]));
   }, [uploading]);
 
