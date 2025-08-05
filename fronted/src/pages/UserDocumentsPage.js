@@ -36,7 +36,8 @@ const UserDocumentsPage = () => {
     formData.append('file', file);
     formData.append('docType', docType);
     try {
-      const response = await axios.post('/api/documents/upload', formData, {
+      const apiBase = process.env.REACT_APP_API_BASE_URL || '';
+      const response = await axios.post(`${apiBase}/api/documents/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}`

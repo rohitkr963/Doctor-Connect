@@ -203,19 +203,29 @@ useEffect(() => {
           room,
           appointmentId
         };
+    // Log payload for debugging
+    console.log('Sending message payload:', msg);
     // Real-time emit
     socketRef.current.emit('sendMessage', msg);
     // Save to DB
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...((doctor.isCurrentDoctor && doctor.token)
-          ? { 'Authorization': `Bearer ${doctor.token}` }
-          : (patient.token ? { 'Authorization': `Bearer ${patient.token}` } : {}))
-      },
-      body: JSON.stringify(msg)
-    });
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...((doctor.isCurrentDoctor && doctor.token)
+            ? { 'Authorization': `Bearer ${doctor.token}` }
+            : (patient.token ? { 'Authorization': `Bearer ${patient.token}` } : {}))
+        },
+        body: JSON.stringify(msg)
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Message send error:', errorData);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
     setInput('');
   };
 

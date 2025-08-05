@@ -30,10 +30,11 @@ const DoctorChatPage = () => {
       headers: { Authorization: `Bearer ${auth.token}` }
     })
       .then(async res => {
-        setUserList(res.data);
+        const users = Array.isArray(res.data) ? res.data : [];
+        setUserList(users);
         // Fetch unread count for each user
         const counts = {};
-        for (const user of res.data) {
+        for (const user of users) {
           try {
             const resp = await axios.get(`/api/messages/unread-count/${auth._id}/${user._id}`, {
               headers: { Authorization: `Bearer ${auth.token}` }
