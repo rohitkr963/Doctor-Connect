@@ -6,13 +6,12 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 
-const doctorRoutes = require('./routes/doctorRoutes');
+const doctorAssistantController = require('./controllers/doctorAssistantController');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
-const doctorChatbotRoutes = require('./routes/doctorChatbotRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 
 connectDB();
@@ -36,14 +35,34 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/api/doctors', doctorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chatbot', chatbotRoutes);
-app.use('/api/ai', doctorChatbotRoutes);
 app.use('/api/documents', documentRoutes);
+// Doctor's AI Assistant endpoint
+app.post('/api/doctor-ai-assistant', async (req, res) => {
+  const { message, doctorId } = req.body;
+  try {
+    const reply = await doctorAssistantController.doctorAssistantResponse(message, doctorId);
+    res.json({ reply });
+  } catch (err) {
+    console.error('Doctor AI Assistant error:', err);
+    res.status(500).json({ message: 'Doctor AI Assistant error', error: err.message });
+  }
+});
+// Doctor's AI Assistant endpoint
+app.post('/api/doctor-ai-assistant', async (req, res) => {
+  const { message, doctorId } = req.body;
+  try {
+    const reply = await doctorAssistantController.doctorAssistantResponse(message, doctorId);
+    res.json({ reply });
+  } catch (err) {
+    console.error('Doctor AI Assistant error:', err);
+    res.status(500).json({ message: 'Doctor AI Assistant error', error: err.message });
+  }
+});
 
 // Socket.io
 const userSockets = {};
