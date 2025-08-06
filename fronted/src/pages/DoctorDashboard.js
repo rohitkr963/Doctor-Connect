@@ -125,123 +125,123 @@ const DoctorDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex items-center justify-center py-8 animate-fade-in-up">
-      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 animate-fade-in-up animate-float-card">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex flex-col py-4 animate-fade-in-up">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 animate-fade-in-up animate-float-card gap-4">
           <div>
-            <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 animate-heading-glow">Welcome, {auth.name}</h1>
-            <p className="text-blue-900 mt-1 text-lg">Here's your clinic's live status.</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 animate-heading-glow">Welcome, {auth.name}</h1>
+            <p className="text-blue-900 mt-1 text-base sm:text-lg">Here's your clinic's live status.</p>
           </div>
-          <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-            <Link to="/doctor/profile/edit" className="bg-gradient-to-r from-blue-600 to-teal-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover">Edit Profile</Link>
-            <button onClick={handleLogout} className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover">Logout</button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 mt-2 sm:mt-0 w-full sm:w-auto">
+            <Link to="/doctor/profile/edit" className="bg-gradient-to-r from-blue-600 to-teal-500 text-white font-bold py-2 px-4 sm:px-6 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover text-center">Edit Profile</Link>
+            <button onClick={handleLogout} className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-2 px-4 sm:px-6 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover text-center">Logout</button>
           </div>
         </header>
 
         {message && <div className="bg-green-100 text-green-800 p-3 rounded-xl mb-6 text-center shadow animate-fade-in-up">{message}</div>}
         {error && <div className="bg-red-100 text-red-700 p-3 rounded-xl mb-6 text-center shadow animate-fade-in-up">{error}</div>}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
             <ClockIcon />
-            <div className="ml-4">
-              <p className="text-sm text-blue-700">Currently Serving</p>
-              <p className="text-3xl font-extrabold text-blue-900">#{queueData.currentQueueToken}</p>
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm text-blue-700">Currently Serving</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-blue-900">#{queueData.currentQueueToken}</p>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
+          <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
             <UsersIcon />
-            <div className="ml-4">
-              <p className="text-sm text-green-700">Patients in Queue</p>
-              <p className="text-3xl font-extrabold text-green-900">{queueData.queue.length}</p>
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm text-green-700">Patients in Queue</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-green-900">{queueData.queue.length}</p>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
+          <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl flex items-center animate-fade-in-up animate-float-card border border-blue-100">
             <TicketIcon />
-            <div className="ml-4">
-              <p className="text-sm text-yellow-700">Last Token Issued</p>
-              <p className="text-3xl font-extrabold text-yellow-900">#{queueData.lastTokenIssued}</p>
+            <div className="ml-3 sm:ml-4">
+              <p className="text-xs sm:text-sm text-yellow-700">Last Token Issued</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-yellow-900">#{queueData.lastTokenIssued}</p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-8">
-            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
-              <h2 className="text-2xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 animate-heading-glow">My Profile</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-8">
+            <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 animate-heading-glow">My Profile</h2>
               <img 
                 src={doctorProfile.profileDetails.profilePicture || `https://i.pravatar.cc/150?u=${auth._id}`} 
                 alt="Profile" 
-                className="w-28 h-28 rounded-full mx-auto border-4 border-blue-200 object-cover animate-profile-float"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full mx-auto border-4 border-blue-200 object-cover animate-profile-float"
               />
               <div className="text-center mt-4">
-                <p className="font-bold text-xl text-blue-900">{doctorProfile.name}</p>
+                <p className="font-bold text-lg sm:text-xl text-blue-900">{doctorProfile.name}</p>
                 <p className="text-blue-700">{doctorProfile.profileDetails.specialty}</p>
               </div>
               <div className="mt-4 border-t pt-4">
-                <p className="text-sm text-blue-700">Experience: <span className="font-semibold text-blue-900">{doctorProfile.profileDetails.experience} years</span></p>
-                <p className="text-sm text-blue-700">Fee: <span className="font-semibold text-blue-900">₹{doctorProfile.profileDetails.consultationFee}</span></p>
+                <p className="text-xs sm:text-sm text-blue-700">Experience: <span className="font-semibold text-blue-900">{doctorProfile.profileDetails.experience} years</span></p>
+                <p className="text-xs sm:text-sm text-blue-700">Fee: <span className="font-semibold text-blue-900">₹{doctorProfile.profileDetails.consultationFee}</span></p>
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
-              <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-500 animate-heading-glow">Manage Availability</h2>
-              <div className="space-y-3">
-                <button onClick={() => handleStatusUpdate('Available')} disabled={loading} className="w-full bg-gradient-to-r from-green-500 to-teal-400 text-white py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Set to Available</button>
-                <button onClick={() => handleStatusUpdate('Not Available')} disabled={loading} className="w-full bg-gradient-to-r from-yellow-500 to-orange-400 text-white py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Set to Not Available</button>
+            <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-500 animate-heading-glow">Manage Availability</h2>
+              <div className="space-y-2 sm:space-y-3">
+                <button onClick={() => handleStatusUpdate('Available')} disabled={loading} className="w-full bg-gradient-to-r from-green-500 to-teal-400 text-white py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Set to Available</button>
+                <button onClick={() => handleStatusUpdate('Not Available')} disabled={loading} className="w-full bg-gradient-to-r from-yellow-500 to-orange-400 text-white py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Set to Not Available</button>
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
-              <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">Queue Actions</h2>
-              <div className="space-y-3">
-                <button onClick={() => handleQueueAction('next')} disabled={loading} className="w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Call Next Patient</button>
-                <button onClick={() => handleQueueAction('reset')} disabled={loading} className="w-full bg-gradient-to-r from-gray-700 to-gray-500 text-white py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Reset Queue</button>
+            <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">Queue Actions</h2>
+              <div className="space-y-2 sm:space-y-3">
+                <button onClick={() => handleQueueAction('next')} disabled={loading} className="w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Call Next Patient</button>
+                <button onClick={() => handleQueueAction('reset')} disabled={loading} className="w-full bg-gradient-to-r from-gray-700 to-gray-500 text-white py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-all animate-pulse-on-hover disabled:bg-gray-400">Reset Queue</button>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
-              <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">Upcoming Patients</h2>
-              <div className="space-y-4">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-8">
+            <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">Upcoming Patients</h2>
+              <div className="space-y-3 sm:space-y-4">
                 {queueData.queue.length > 0 ? (
                   queueData.queue.slice(0, 5).map((patient) => (
-                    <div key={patient._id} className="flex justify-between items-center bg-white/70 p-4 rounded-xl shadow animate-fade-in-up animate-float-card">
+                    <div key={patient._id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/70 p-3 sm:p-4 rounded-xl shadow animate-fade-in-up animate-float-card">
                       <div>
                         <p className="font-bold text-blue-900">Token #{patient.tokenNumber}</p>
-                        <p className="text-sm text-blue-700">{patient.patientName}</p>
+                        <p className="text-xs sm:text-sm text-blue-700">{patient.patientName}</p>
                       </div>
-                      <span className="text-sm font-semibold text-blue-500 animate-pulse">Waiting...</span>
+                      <span className="text-xs sm:text-sm font-semibold text-blue-500 animate-pulse mt-2 sm:mt-0">Waiting...</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-blue-500 py-8">No patients in the queue right now.</p>
+                  <p className="text-center text-blue-500 py-4 sm:py-8">No patients in the queue right now.</p>
                 )}
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
-              <h2 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">My Patient History</h2>
-              <div className="space-y-3 max-h-60 overflow-y-auto">
+            <div className="bg-white/80 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-2xl animate-fade-in-up animate-float-card border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 animate-heading-glow">My Patient History</h2>
+              <div className="space-y-2 sm:space-y-3 max-h-60 overflow-y-auto">
                 {patientHistory.length > 0 ? (
                   patientHistory.map((patient) => (
-                    <div key={patient.patientId} className="flex justify-between items-center bg-white/70 p-3 rounded-xl shadow animate-fade-in-up animate-float-card">
+                    <div key={patient.patientId} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/70 p-2 sm:p-3 rounded-xl shadow animate-fade-in-up animate-float-card">
                       <div>
                         <p className="font-semibold text-blue-900">
                           {patient.patientName ? patient.patientName : (patient.phone ? patient.phone : 'Unknown')}
                         </p>
                         {patient.phone && (
-                          <p className="text-sm text-blue-700">{patient.phone}</p>
+                          <p className="text-xs sm:text-sm text-blue-700">{patient.phone}</p>
                         )}
                       </div>
                       <button
                         onClick={() => handleDeleteHistory(patient.patientId)}
-                        className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover"
+                        className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 sm:px-4 py-2 rounded-xl shadow-lg hover:scale-105 transition-all animate-pulse-on-hover mt-2 sm:mt-0"
                       >
                         Delete
                       </button>
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-blue-500 py-4">No patient history found.</p>
+                  <p className="text-center text-blue-500 py-2 sm:py-4">No patient history found.</p>
                 )}
               </div>
             </div>

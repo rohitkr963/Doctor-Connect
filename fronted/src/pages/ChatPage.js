@@ -52,27 +52,29 @@ const ChatPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col animate-fade-in-up" style={bgPattern}>
-      {/* Animated glassmorphism chat header */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg flex items-center gap-4 px-8 py-4 border-b border-blue-100 shadow-xl animate-fade-in-up animate-float-card">
-        <button
-          className="text-blue-500 text-2xl font-bold hover:text-teal-600 mr-2 transition-all animate-pulse-on-hover"
-          onClick={() => navigate(-1)}
-          title="Back"
-        >
-          &larr;
-        </button>
-        <img
-          src={doctor.profileDetails?.profilePicture || `https://i.pravatar.cc/150?u=${doctor._id}`}
-          alt={doctor.name}
-          className="w-14 h-14 rounded-full border-4 border-teal-300 object-cover animate-profile-float"
-        />
-        <div className="flex flex-col">
-          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 text-lg animate-heading-glow">{doctor.name}</span>
+      {/* Responsive chat header */}
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg flex flex-col sm:flex-row items-center gap-2 sm:gap-4 px-4 sm:px-8 py-3 sm:py-4 border-b border-blue-100 shadow-xl animate-fade-in-up animate-float-card">
+        <div className="flex items-center w-full sm:w-auto">
+          <button
+            className="text-blue-500 text-xl sm:text-2xl font-bold hover:text-teal-600 mr-2 transition-all animate-pulse-on-hover"
+            onClick={() => navigate(-1)}
+            title="Back"
+          >
+            &larr;
+          </button>
+          <img
+            src={doctor.profileDetails?.profilePicture || `https://i.pravatar.cc/150?u=${doctor._id}`}
+            alt={doctor.name}
+            className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-4 border-teal-300 object-cover animate-profile-float"
+          />
+        </div>
+        <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
+          <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 text-base sm:text-lg animate-heading-glow">{doctor.name}</span>
           <span className="text-teal-700 text-xs font-semibold animate-fade-in-up">{doctor.profileDetails?.specialty || ''}</span>
         </div>
       </div>
-      {/* Chat body, full width, no box */}
-      <div className="flex-1 flex flex-col w-full max-w-3xl mx-auto animate-fade-in-up" style={{ minHeight: 0 }}>
+      {/* Chat body, full width, responsive */}
+      <div className="flex-1 flex flex-col w-full max-w-full sm:max-w-3xl mx-auto animate-fade-in-up px-2 sm:px-0" style={{ minHeight: 0 }}>
         <div className="flex-1 flex flex-col">
           <ChatModal 
             doctor={doctor}

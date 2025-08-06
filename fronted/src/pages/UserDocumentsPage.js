@@ -84,11 +84,11 @@ const UserDocumentsPage = () => {
   // Delete document
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-start p-4 bg-gradient-to-br from-teal-100 via-blue-50 to-indigo-100 animate-bg-fade">
+    <div className="min-h-screen w-full flex flex-col items-center justify-start p-2 sm:p-4 bg-gradient-to-br from-teal-100 via-blue-50 to-indigo-100 animate-bg-fade">
       <h2 className="text-3xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-600 via-blue-600 to-indigo-600 drop-shadow-lg animate-fade-in-up" style={{animationDelay: '0ms'}}>
         Mera Health Record
       </h2>
-      <form onSubmit={handleUpload} className="flex gap-2 mb-8 items-center animate-fade-in-up backdrop-blur-md bg-white/60 rounded-xl shadow-lg px-4 py-3" style={{animationDelay: '80ms'}}>
+      <form onSubmit={handleUpload} className="flex flex-col sm:flex-row gap-2 mb-8 items-center animate-fade-in-up backdrop-blur-md bg-white/60 rounded-xl shadow-lg px-2 sm:px-4 py-2 sm:py-3 w-full max-w-lg" style={{animationDelay: '80ms'}}>
         <input
           type="text"
           value={docType}
@@ -104,23 +104,23 @@ const UserDocumentsPage = () => {
       @keyframes fade-in-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
       .animate-fade-in-up { animation: fade-in-up 0.5s cubic-bezier(0.4,0,0.2,1) both; }
     `}</style>
-      <div className="w-full max-w-5xl mx-auto bg-white/40 rounded-3xl shadow-2xl p-6 mt-2 backdrop-blur-md animate-fade-in-up">
+      <div className="w-full max-w-5xl mx-auto bg-white/40 rounded-3xl shadow-2xl p-2 sm:p-6 mt-2 backdrop-blur-md animate-fade-in-up">
         <h3 className="text-xl font-bold mb-6 text-indigo-700 tracking-wide animate-fade-in-up">Your Uploaded Documents</h3>
         {records.length === 0 ? (
           <div className="text-gray-500">No records found.</div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-10">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-10">
             {records.map((record, idx) => (
               <div
                 key={record.public_id}
-                className="flex flex-col items-center bg-white/70 rounded-2xl shadow-2xl border border-indigo-100 p-6 w-64 transition-transform duration-300 hover:scale-105 cursor-pointer animate-fade-in-up glass-card"
+                className="flex flex-col items-center bg-white/70 rounded-2xl shadow-2xl border border-indigo-100 p-2 sm:p-6 w-40 sm:w-64 transition-transform duration-300 hover:scale-105 cursor-pointer animate-fade-in-up glass-card"
                 style={{ animationDelay: `${idx * 80}ms` }}
                 onClick={() => { setModalImg(record.url); setModalOpen(true); }}
               >
                 <img
                   src={record.url}
                   alt={record.fileName}
-                  className="w-44 h-44 object-cover rounded-xl mb-4 border-2 border-indigo-200 shadow-lg animate-zoom-in"
+                  className="w-32 h-32 sm:w-44 sm:h-44 object-cover rounded-xl mb-2 sm:mb-4 border-2 border-indigo-200 shadow-lg animate-zoom-in"
                   style={{ animationDelay: `${idx * 80 + 100}ms` }}
                 />
                 <span className="block text-xs text-indigo-500 mb-1 font-semibold">{record.docType ? record.docType : 'No type specified'}</span>
@@ -133,11 +133,11 @@ const UserDocumentsPage = () => {
     {/* Modal for big image view (pure React, no transition-group) */}
     {modalOpen && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-900/80 via-blue-900/70 to-teal-800/80 animate-fade-in" onClick={() => setModalOpen(false)}>
-        <div className="bg-white/90 rounded-3xl shadow-2xl p-6 relative flex flex-col items-center animate-modal-pop glass-card" onClick={e => e.stopPropagation()}>
-          <img src={modalImg} alt="Document" className="w-[400px] h-[400px] object-contain rounded-2xl mb-4 animate-zoom-in" />
+        <div className="bg-white/90 rounded-3xl shadow-2xl p-2 sm:p-6 relative flex flex-col items-center animate-modal-pop glass-card w-[90vw] max-w-[420px]" onClick={e => e.stopPropagation()}>
+          <img src={modalImg} alt="Document" className="w-[80vw] max-w-[400px] h-[60vw] max-h-[400px] object-contain rounded-2xl mb-2 sm:mb-4 animate-zoom-in" />
           <button className="absolute top-2 right-2 text-gray-700 text-2xl font-bold hover:text-red-500 bg-white/70 rounded-full px-3 py-1 shadow" onClick={() => setModalOpen(false)}>&times;</button>
           <button
-            className="mt-2 px-6 py-2 bg-gradient-to-r from-red-500 via-pink-500 to-yellow-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-transform duration-200 animate-fade-in-up"
+            className="mt-2 px-4 sm:px-6 py-2 bg-gradient-to-r from-red-500 via-pink-500 to-yellow-500 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-transform duration-200 animate-fade-in-up text-sm sm:text-base"
             style={{animationDelay: '120ms'}}
             onClick={async () => {
               setUploading(true);

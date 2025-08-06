@@ -54,45 +54,31 @@ const DoctorChatPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-blue-100 via-teal-100 to-white animate-fade-in-up">
-      {/* Sidebar: User list */}
-      <div className="w-full md:w-1/3 lg:w-1/4 bg-white/60 backdrop-blur-2xl border-r border-blue-100 h-[60vh] md:h-auto overflow-y-auto shadow-2xl animate-fade-in-up animate-float-card rounded-tr-3xl rounded-br-3xl">
-        <div className="p-6 font-extrabold text-2xl border-b bg-gradient-to-r from-teal-600 to-blue-600 text-white animate-heading-glow rounded-tr-3xl">Chats</div>
+      {/* Sidebar: User list - responsive */}
+      <div className="w-full md:w-1/3 lg:w-1/4 bg-white/60 backdrop-blur-2xl border-r border-blue-100 h-[40vh] md:h-auto overflow-y-auto shadow-2xl animate-fade-in-up animate-float-card rounded-tr-3xl rounded-br-3xl">
+        <div className="p-4 sm:p-6 font-extrabold text-xl sm:text-2xl border-b bg-gradient-to-r from-teal-600 to-blue-600 text-white animate-heading-glow rounded-tr-3xl">Chats</div>
         {userList.length === 0 ? (
-          <div className="p-8 text-blue-400 text-center animate-fade-in-up">No messages yet.</div>
+          <div className="p-6 sm:p-8 text-blue-400 text-center animate-fade-in-up text-base sm:text-lg">No messages yet.</div>
         ) : (
           <ul className="divide-y divide-blue-50">
             {userList.map(user => (
               <li key={user._id}>
                 <button
-                  className={`w-full flex items-center gap-4 px-5 py-4 group text-left transition-all duration-300 rounded-2xl hover:bg-gradient-to-r hover:from-teal-100 hover:to-blue-50 hover:scale-[1.03] shadow-md ${selectedUser && selectedUser._id === user._id ? 'bg-gradient-to-r from-teal-200 to-blue-100 scale-[1.04] shadow-lg' : 'bg-white/60'}`}
+                  className={`w-full flex items-center gap-2 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 group text-left transition-all duration-300 rounded-2xl hover:bg-gradient-to-r hover:from-teal-100 hover:to-blue-50 hover:scale-[1.03] shadow-md ${selectedUser && selectedUser._id === user._id ? 'bg-gradient-to-r from-teal-200 to-blue-100 scale-[1.04] shadow-lg' : 'bg-white/60'}`}
                   style={{ boxShadow: selectedUser && selectedUser._id === user._id ? '0 4px 24px 0 rgba(13, 148, 136, 0.12)' : undefined }}
                   onClick={async () => {
                     setSelectedUser(user);
-                    // Validate doctorId and userId before API call
-                    const doctorId = auth._id;
-                    const userId = user._id;
-                    const isValidObjectId = id => typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/);
-                    if (!isValidObjectId(doctorId) || !isValidObjectId(userId)) {
-                      // Optionally show a warning or skip API call
-                      setUserUnreadCounts(prev => ({ ...prev, [user._id]: 0 }));
-                      return;
-                    }
-                    try {
-                      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/messages/mark-read/${doctorId}/${userId}`, {}, {
-                        headers: { Authorization: `Bearer ${auth.token}` }
-                      });
-                      setUserUnreadCounts(prev => ({ ...prev, [user._id]: 0 }));
-                    } catch {}
+                    // ...existing code...
                   }}
                 >
-                  <div className={`relative w-14 h-14 flex-shrink-0 rounded-full border-4 ${selectedUser && selectedUser._id === user._id ? 'border-teal-400' : 'border-blue-100'} shadow-lg transition-all`}>
+                  <div className={`relative w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0 rounded-full border-4 ${selectedUser && selectedUser._id === user._id ? 'border-teal-400' : 'border-blue-100'} shadow-lg transition-all`}>
                     <img src={user.profilePicture || `https://i.pravatar.cc/150?u=${user._id}`} alt={user.name} className="w-full h-full rounded-full object-cover animate-profile-float" />
                     {userUnreadCounts[user._id] > 0 && (
                       <span className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full px-2 py-1 text-xs font-bold shadow animate-fade-in-up border-2 border-white">{userUnreadCounts[user._id]}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-blue-900 truncate group-hover:text-teal-700 transition-colors text-lg">{user.name}</div>
+                    <div className="font-bold text-blue-900 truncate group-hover:text-teal-700 transition-colors text-base sm:text-lg">{user.name}</div>
                     <div className="text-xs text-blue-700 truncate group-hover:text-blue-500 transition-colors">{user.email}</div>
                   </div>
                 </button>
@@ -101,26 +87,26 @@ const DoctorChatPage = () => {
           </ul>
         )}
       </div>
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-white via-blue-50 to-teal-50 animate-fade-in-up" style={{ minHeight: 0 }}>
+      {/* Main chat area - responsive */}
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-white via-blue-50 to-teal-50 animate-fade-in-up px-2 sm:px-0" style={{ minHeight: 0 }}>
         {selectedUser && doctor ? (
           <>
-            {/* Chat header */}
-            <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg flex items-center gap-4 px-8 py-4 border-b border-blue-100 shadow-xl animate-fade-in-up animate-float-card">
-              <img src={selectedUser.profilePicture || `https://i.pravatar.cc/150?u=${selectedUser._id}`} alt={selectedUser.name} className="w-14 h-14 rounded-full border-4 border-teal-300 object-cover animate-profile-float" />
-              <div className="flex flex-col">
-                <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 text-lg animate-heading-glow">{selectedUser.name}</span>
+            {/* Chat header - responsive */}
+            <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg flex flex-col sm:flex-row items-center gap-2 sm:gap-4 px-4 sm:px-8 py-3 sm:py-4 border-b border-blue-100 shadow-xl animate-fade-in-up animate-float-card">
+              <img src={selectedUser.profilePicture || `https://i.pravatar.cc/150?u=${selectedUser._id}`} alt={selectedUser.name} className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-4 border-teal-300 object-cover animate-profile-float" />
+              <div className="flex flex-col items-center sm:items-start">
+                <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 text-base sm:text-lg animate-heading-glow">{selectedUser.name}</span>
                 <span className="text-teal-700 text-xs font-semibold animate-fade-in-up">{selectedUser.email}</span>
               </div>
-              <button className="ml-auto text-blue-500 text-2xl font-bold hover:text-teal-600 transition-all animate-pulse-on-hover" onClick={() => setSelectedUser(null)} title="Back">&larr;</button>
+              <button className="ml-auto text-blue-500 text-xl sm:text-2xl font-bold hover:text-teal-600 transition-all animate-pulse-on-hover" onClick={() => setSelectedUser(null)} title="Back">&larr;</button>
             </div>
-            {/* Chat body */}
-            <div className="flex-1 flex flex-col w-full max-w-3xl mx-auto animate-fade-in-up" style={{ minHeight: 0 }}>
+            {/* Chat body - responsive */}
+            <div className="flex-1 flex flex-col w-full max-w-full sm:max-w-3xl mx-auto animate-fade-in-up" style={{ minHeight: 0 }}>
               <ChatModal doctor={{ ...doctor, isCurrentDoctor: true }} patient={{ ...selectedUser, isCurrentUser: false }} appointmentId={null} />
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-blue-400 text-2xl animate-fade-in-up">Select a user to start chatting</div>
+          <div className="flex-1 flex items-center justify-center text-blue-400 text-base sm:text-2xl animate-fade-in-up">Select a user to start chatting</div>
         )}
       </div>
       <style>{`
