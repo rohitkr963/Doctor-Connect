@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import DoctorAssistantChatbot from '../components/DoctorAssistantChatbot';
 import AuthContext from '../context/AuthContext';
-
+        
 // ...existing imports...
 
 const DoctorDashboard = (props) => {
   // ...existing code...
-  const { auth } = useContext(AuthContext);
+const { auth } = React.useContext(AuthContext);
   // ...existing code...
 
   return (
