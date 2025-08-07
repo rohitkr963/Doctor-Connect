@@ -569,6 +569,64 @@ const HomePage = () => {
 
     {/* Health ChatBot Integration */}
     <HealthChatBot />
+
+    {/* About Us Section */}
+    <section className="mt-20 mb-8 px-4 py-12 bg-gradient-to-r from-blue-50 via-teal-50 to-white rounded-3xl shadow-2xl max-w-5xl mx-auto animate-fade-in-up">
+      <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-600 mb-4 text-center">About Us</h2>
+      <p className="text-lg text-gray-700 text-center max-w-3xl mx-auto">
+        We are a passionate team of technologists, designers, and healthcare enthusiasts dedicated to making a real difference in people’s lives. Our mission is to bridge the gap between technology and healthcare, making quality care accessible and simple for everyone.<br className="hidden sm:block" />
+        <span className="font-semibold text-blue-600">Driven by empathy, powered by innovation.</span>
+      </p>
+      <div className="flex flex-wrap justify-center gap-8 mt-8">
+        <div className="flex flex-col items-center max-w-xs">
+          <span className="inline-block bg-blue-100 p-4 rounded-full mb-2"><HeartIcon /></span>
+          <span className="font-bold text-blue-700">Our Mission</span>
+          <p className="text-gray-600 text-center mt-2">To empower every individual with easy access to trusted healthcare and support, using the best of technology and human touch.</p>
+        </div>
+        <div className="flex flex-col items-center max-w-xs">
+          <span className="inline-block bg-teal-100 p-4 rounded-full mb-2"><BrainIcon /></span>
+          <span className="font-bold text-teal-700">Our Team</span>
+          <p className="text-gray-600 text-center mt-2">A diverse group of engineers, designers, and healthcare professionals working together to build a better, healthier future for all.</p>
+        </div>
+        <div className="flex flex-col items-center max-w-xs">
+          <span className="inline-block bg-yellow-100 p-4 rounded-full mb-2"><StarIcon /></span>
+          <span className="font-bold text-yellow-600">Our Values</span>
+          <p className="text-gray-600 text-center mt-2">Empathy, trust, and innovation guide everything we do. We believe in putting people first and always striving for excellence.</p>
+        </div>
+      </div>
+    </section>
+
+    {/* Enhanced Footer Section */}
+    <footer className="relative mt-16 bg-gradient-to-br from-blue-200/80 via-white/60 to-teal-200/80 backdrop-blur-xl py-10 px-4 rounded-t-3xl shadow-2xl border-t border-blue-200 overflow-hidden">
+      {/* Glassmorphism effect */}
+      <div className="absolute inset-0 bg-white/30 backdrop-blur-2xl rounded-t-3xl pointer-events-none" aria-hidden="true"></div>
+      <div className="relative max-w-5xl mx-auto flex flex-col items-center gap-6 z-10">
+        <div className="text-center">
+          <h3 className="text-2xl font-extrabold text-teal-700 mb-2 drop-shadow-lg">Let's Connect & Collaborate</h3>
+          <p className="text-gray-700 text-lg font-medium mb-4">Empowering healthcare, one connection at a time.</p>
+        </div>
+        <div className="flex gap-8 text-3xl items-center justify-center">
+          <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="group hover:scale-110 transition-transform" title="WhatsApp">
+            <span className="sr-only">WhatsApp</span>
+            <svg fill="currentColor" viewBox="0 0 24 24" className="w-10 h-10 text-green-500 group-hover:text-green-600 drop-shadow-xl"><path d="M20.52 3.48A12 12 0 0 0 3.48 20.52l-1.32 4.84a1 1 0 0 0 1.22 1.22l4.84-1.32A12 12 0 1 0 20.52 3.48zm-8.52 17a10 10 0 1 1 10-10 10 10 0 0 1-10 10zm5.2-7.6c-.28-.14-1.65-.81-1.9-.9s-.44-.14-.62.14-.72.9-.88 1.08-.32.21-.6.07a8.18 8.18 0 0 1-2.4-1.48 9.1 9.1 0 0 1-1.68-2.08c-.18-.31 0-.48.13-.62.13-.13.28-.34.42-.51a.56.56 0 0 0 .08-.6c-.07-.14-.62-1.5-.85-2.06-.22-.54-.45-.47-.62-.48h-.53a1.06 1.06 0 0 0-.77.36 3.22 3.22 0 0 0-1 2.41c0 1.42 1 2.8 2.1 3.8a11.6 11.6 0 0 0 4.1 2.5c.57.18 1.1.16 1.5.1a3.1 3.1 0 0 0 2.1-1.5c.14-.23.14-.43.1-.6s-.25-.18-.53-.32z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/your-linkedin" target="_blank" rel="noopener noreferrer" className="group hover:scale-110 transition-transform" title="LinkedIn">
+            <span className="sr-only">LinkedIn</span>
+            <svg fill="currentColor" viewBox="0 0 24 24" className="w-10 h-10 text-blue-700 group-hover:text-blue-800 drop-shadow-xl"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.88v1.23h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v4.72z"/></svg>
+          </a>
+          <a href="tel:+919999999999" className="group hover:scale-110 transition-transform" title="Call">
+            <span className="sr-only">Call</span>
+            <svg fill="currentColor" viewBox="0 0 24 24" className="w-10 h-10 text-teal-600 group-hover:text-teal-700 drop-shadow-xl"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1-.24 11.36 11.36 0 0 0 3.58.57 1 1 0 0 1 1 1v3.61a1 1 0 0 1-1 1A17 17 0 0 1 3 5a1 1 0 0 1 1-1h3.61a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.58 1 1 0 0 1-.24 1z"/></svg>
+          </a>
+          <a href="mailto:info@doctorconnect.com" className="group hover:scale-110 transition-transform" title="Email">
+            <span className="sr-only">Email</span>
+            <svg fill="currentColor" viewBox="0 0 24 24" className="w-10 h-10 text-red-500 group-hover:text-red-600 drop-shadow-xl"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 2v.01L12 13 4 6.01V6h16zM4 20v-9.99l7.99 7.99a1 1 0 0 0 1.42 0L20 10.01V20H4z"/></svg>
+          </a>
+        </div>
+        <button onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})} className="mt-6 px-6 py-2 bg-gradient-to-r from-teal-400 to-blue-500 text-white font-bold rounded-full shadow-lg hover:scale-105 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">Back to Top</button>
+        <div className="text-center text-gray-500 text-sm mt-6">&copy; {new Date().getFullYear()} Doctor Connect. All rights reserved.</div>
+      </div>
+    </footer>
   </div>
   );
 };

@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+
+const BotIcon = () => (
+  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 5V3m0 18v-2M8 8.5a.5.5 0 10-1 0 .5.5 0 001 0zM17 8.5a.5.5 0 10-1 0 .5.5 0 001 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12a4 4 0 110-8 4 4 0 010 8z" /></svg>
+);
+
 
 const DoctorChatBot = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: 'Namaste Doctor! Sawal poochhiye, main madad karunga.' }
+  ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -20,7 +34,6 @@ const DoctorChatBot = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error');
-      // If reply is a direct DB answer, highlight it
       let isDbAnswer = false;
       if (data.reply && (data.reply.startsWith('Aaj') || data.reply.startsWith('User:') || data.reply === 'User nahi mila.')) {
         isDbAnswer = true;
@@ -36,43 +49,63 @@ const DoctorChatBot = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-6 max-w-lg mx-auto mt-8 animate-fade-in-up">
-      <h2 className="text-2xl font-bold text-blue-900 mb-4">Doctor Chatbot</h2>
-      <div className="h-64 overflow-y-auto border rounded-lg p-3 bg-slate-50 mb-4">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`mb-2 flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`px-4 py-2 rounded-xl ${msg.sender === 'doctor' ? 'bg-blue-100 text-blue-900' : msg.isDbAnswer ? 'bg-yellow-100 text-yellow-900 font-bold' : 'bg-teal-100 text-teal-900'}`}>{msg.text}</div>
+    <>
+      {isOpen && (
+        <div className="fixed bottom-24 right-4 sm:right-8 w-[90%] max-w-sm h-[70vh] bg-white rounded-2xl shadow-2xl flex flex-col z-50 animate-fade-in-up">
+          <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl">
+            <h3 className="font-bold text-lg text-gray-800">Doctor Chatbot</h3>
+            <button onClick={() => setIsOpen(false)} className="p-1 rounded-full hover:bg-gray-200">
+              <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
           </div>
-        ))}
-        {loading && <div className="text-blue-400">Bot is typing...</div>}
-      </div>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
-      <div className="flex">
-        <input
-          type="text"
-          className="flex-grow border rounded-l-lg px-3 py-2 focus:outline-none"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="Ask something..."
-          disabled={loading}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-        />
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-r-lg font-bold hover:bg-blue-700"
-          onClick={sendMessage}
-          disabled={loading}
-        >Send</button>
-      </div>
-      <style>{`
-        @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(40px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 1s cubic-bezier(0.23, 1, 0.32, 1) both;
-        }
-      `}</style>
-    </div>
+          <div className="flex-grow p-4 overflow-y-auto">
+            <div className="space-y-4">
+              {messages.map((msg, idx) => (
+                <div key={idx}>
+                  <div className={`flex items-end gap-2 ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
+                    {msg.sender === 'bot' && <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0"><BotIcon /></div>}
+                    <div className={`px-4 py-2 rounded-2xl max-w-xs break-words ${msg.sender === 'doctor' ? 'bg-teal-500 text-white rounded-br-none' : msg.isDbAnswer ? 'bg-yellow-100 text-yellow-900 font-bold rounded-bl-none' : 'bg-gray-200 text-gray-800 rounded-bl-none'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex items-end gap-2 justify-start">
+                  <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0"><BotIcon /></div>
+                  <div className="px-4 py-2 rounded-2xl max-w-xs break-words bg-gray-200 text-gray-800 rounded-bl-none">
+                    <span className="animate-pulse">...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+          </div>
+          <div className="p-4 border-t flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && sendMessage()}
+              placeholder="Ask something..."
+              className="flex-grow p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+              disabled={loading}
+            />
+            <button
+              onClick={sendMessage}
+              className="bg-teal-500 p-3 rounded-full text-white hover:bg-teal-600 transition shadow"
+              disabled={loading}
+            >Send</button>
+          </div>
+        </div>
+      )}
+      <button
+        onClick={() => setIsOpen(prev => !prev)}
+        className="fixed bottom-32 right-4 sm:right-8 bg-teal-500 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center z-50"
+      >
+        <BotIcon />
+      </button>
+    </>
   );
 };
 

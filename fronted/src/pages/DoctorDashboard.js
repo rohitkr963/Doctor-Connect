@@ -126,6 +126,7 @@ const DoctorDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex flex-col py-4 animate-fade-in-up">
+      <DoctorChatBot />
       <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 animate-fade-in-up animate-float-card gap-4">
           <div>
@@ -289,14 +290,8 @@ const DoctorDashboard = () => {
           animation: profileFloat 4s ease-in-out infinite;
         }
       `}</style>
-      <div className="min-h-screen bg-slate-50 animate-fade-in-up">
-      {/* ...existing dashboard code... */}
-      <DoctorChatBot />
-    </div>
     </div>
   );
 };
-
-
 
 export default DoctorDashboard;

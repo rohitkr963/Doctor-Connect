@@ -66,7 +66,7 @@ const Navbar = () => {
               )}
             </>
           )}
-          {/* Hamburger for mobile */}
+          {/* Hamburger for mobile + doctor chat icon next to it */}
           <div className="sm:hidden flex items-center">
             <button
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-teal-600 focus:outline-none"
@@ -81,6 +81,17 @@ const Navbar = () => {
                 )}
               </svg>
             </button>
+            {auth?.type === 'doctor' && (
+              <Link to="/doctor/chat" className="ml-3 flex items-center justify-center relative font-bold text-teal-600" title="Chats">
+                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8l-4 1 1-4A8.96 8.96 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                {unreadMsgCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold">{unreadMsgCount}</span>
+                )}
+                <span className="ml-2 hidden sm:inline">Chats</span>
+              </Link>
+            )}
           </div>
           {/* Desktop menu */}
           <div className="hidden sm:flex items-center space-x-4">
@@ -94,13 +105,14 @@ const Navbar = () => {
                     <Link to="/doctor/dashboard" className="text-gray-600 hover:text-blue-600 font-medium">Dashboard</Link>
                     <Link to={`/doctor/profile/${auth._id}`} className="text-gray-600 hover:text-blue-600 font-medium">My Profile</Link>
                     <Link to="/doctor/appointments" className="text-gray-600 hover:text-blue-600 font-medium">Appointments</Link>
-                    <Link to="/doctor/chat" className="ml-2 flex items-center justify-center relative" title="Chats">
-                      <svg className="w-6 h-6 text-gray-500 hover:text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <Link to="/doctor/chat" className="ml-2 flex items-center justify-center relative font-bold text-teal-600" title="Chats">
+                      <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8l-4 1 1-4A8.96 8.96 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       {unreadMsgCount > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold">{unreadMsgCount}</span>
                       )}
+                      <span className="ml-2">Chats</span>
                     </Link>
                     <Link to="/patient-history" className="text-gray-600 hover:text-blue-600 font-medium">My Patient History</Link>
                   </>
@@ -149,8 +161,8 @@ const Navbar = () => {
                     <Link to="/doctor/dashboard" className="text-gray-600 hover:text-blue-600 font-medium w-full">Dashboard</Link>
                     <Link to={`/doctor/profile/${auth._id}`} className="text-gray-600 hover:text-blue-600 font-medium w-full">My Profile</Link>
                     <Link to="/doctor/appointments" className="text-gray-600 hover:text-blue-600 font-medium w-full">Appointments</Link>
-                    <Link to="/doctor/chat" className="flex items-center justify-start relative w-full" title="Chats">
-                      <svg className="w-6 h-6 text-gray-500 hover:text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <Link to="/doctor/chat" className="flex items-center justify-start relative w-full font-bold text-teal-600" title="Chats">
+                      <svg className="w-6 h-6 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8l-4 1 1-4A8.96 8.96 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                       {unreadMsgCount > 0 && (
