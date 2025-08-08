@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,33 +7,40 @@ const DoctorProfileCard = ({ doctor }) => {
   if (!doctor) return null;
   return (
     <div
-      className="doctor-profile-card"
-      style={{
-        border: '1px solid #e0e0e0',
-        borderRadius: 8,
-        padding: 16,
-        margin: '12px 0',
-        cursor: 'pointer',
-        background: '#fafbfc',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-      }}
+      className="group cursor-pointer bg-white/90 border border-blue-100 rounded-2xl shadow-xl p-5 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-2xl"
       onClick={() => navigate(`/doctor/${doctor._id}`)}
     >
-      <h3 style={{ margin: 0, color: '#1976d2' }}>{doctor.name}</h3>
-      <div style={{ fontSize: 15, color: '#444', margin: '4px 0' }}>
-        <b>Specialty:</b> {doctor.profileDetails?.specialty || (doctor.profileDetails?.specialties && doctor.profileDetails.specialties.join(', '))}
+      <div className="w-20 h-20 rounded-full border-4 border-teal-200 shadow-md mb-3 overflow-hidden bg-gray-100 flex items-center justify-center">
+        <img
+          src={doctor.profileDetails?.profilePicture || `https://i.pravatar.cc/150?u=${doctor._id}`}
+          alt={doctor.name}
+          className="w-full h-full object-cover"
+        />
       </div>
-      <div style={{ fontSize: 15, color: '#444' }}>
-        <b>City:</b> {doctor.city || doctor.profileDetails?.city}
+      <h3 className="text-xl font-bold text-blue-700 group-hover:text-teal-600 mb-1 text-center">{doctor.name}</h3>
+      <div className="flex flex-wrap gap-2 justify-center mb-2">
+        {doctor.profileDetails?.specialty && (
+          <span className="px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-xs font-semibold">{doctor.profileDetails.specialty}</span>
+        )}
+        {doctor.city && (
+          <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">{doctor.city}</span>
+        )}
       </div>
-      <div style={{ fontSize: 14, color: '#666', margin: '4px 0' }}>
-        <b>Experience:</b> {doctor.profileDetails?.experience} yrs
+      <div className="text-gray-700 text-sm mb-1 text-center">
+        <span className="font-semibold">Experience:</span> {doctor.profileDetails?.experience} yrs
       </div>
-      <div style={{ fontSize: 14, color: '#666' }}>
-        <b>Qualification:</b> {doctor.profileDetails?.qualification}
-      </div>
-      <div style={{ fontSize: 14, color: '#888', marginTop: 6 }}>
-        <b>Rating:</b> {doctor.rating} ⭐ ({doctor.numReviews} reviews)
+      {doctor.profileDetails?.qualification && (
+        <div className="text-gray-700 text-sm mb-1 text-center">
+          <span className="font-semibold">Qualification:</span> {doctor.profileDetails.qualification}
+        </div>
+      )}
+      {doctor.profileDetails?.bio && (
+        <div className="text-gray-500 text-xs mb-2 text-center line-clamp-2">{doctor.profileDetails.bio}</div>
+      )}
+      <div className="flex items-center gap-1 mt-2">
+        <span className="text-yellow-400 text-lg">★</span>
+        <span className="font-semibold text-gray-800">{doctor.rating || 0}</span>
+        <span className="text-gray-500 text-xs">({doctor.numReviews || 0} reviews)</span>
       </div>
     </div>
   );

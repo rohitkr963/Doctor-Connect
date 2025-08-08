@@ -41,20 +41,13 @@ const HomePage = () => {
     fetchPopularDoctors();
   }, []);
   
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    setMessage('');
-    setTitle(`Results for "${searchQuery || searchCity}"`);
-    try {
-      const results = await searchDoctorsAPI(searchCity, searchQuery, "");
-      setDoctorsToDisplay(results);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    // Redirect to /search with query params
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('query', searchQuery);
+    if (searchCity) params.append('city', searchCity);
+    navigate(`/search?${params.toString()}`);
   };
 
   const handleSpecialtySearch = async (specialty) => {
@@ -113,7 +106,7 @@ const HomePage = () => {
             <p className="mt-4 text-2xl text-gray-700 font-medium bg-white/40 rounded-xl px-3 py-2 shadow mb-2">With over 1000+ doctors and specialists, we provide the best healthcare services.</p>
             <form onSubmit={handleSearch} className="mt-8 bg-white/60 backdrop-blur-lg p-4 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 border border-white/30 animate-fade-in-up delay-100">
               <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="City (Optional)" className="flex-grow p-3 border border-gray-200 rounded-md bg-white/80 focus:ring-2 focus:ring-indigo-300 transition" />
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Doctor name or specialty" className="flex-grow p-3 border border-gray-200 rounded-md bg-white/80 focus:ring-2 focus:ring-indigo-300 transition" />
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Doctor name" className="flex-grow p-3 border border-gray-200 rounded-md bg-white/80 focus:ring-2 focus:ring-indigo-300 transition" />
               <button type="submit" className="bg-gradient-to-br from-indigo-500 to-teal-400 text-white font-bold p-3 rounded-md shadow hover:scale-105 hover:from-indigo-600 hover:to-teal-500 transition-all">Search</button>
             </form>
           </div>

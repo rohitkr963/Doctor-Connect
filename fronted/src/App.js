@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Components aur Pages ko import karna
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import SearchResultsPage from './pages/SearchResultsPage';
 import DoctorLoginPage from './pages/DoctorLoginPage';
 import DoctorRegisterPage from './pages/DoctorRegisterPage';
 import DoctorDashboard from './pages/DoctorDashboard';
@@ -33,6 +34,7 @@ function App() {
           <Routes>
             {/* Website ke saare routes yahan hain */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/login/doctor" element={<DoctorLoginPage />} />
             <Route path="/register/doctor" element={<DoctorRegisterPage />} />
                 <Route path="/doctor/dashboard" element={<ProtectedRoute type="doctor" redirectTo="/"> <DoctorDashboard /> </ProtectedRoute>} />
