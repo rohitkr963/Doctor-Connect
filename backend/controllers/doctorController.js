@@ -199,17 +199,30 @@ const updateDoctorProfile = asyncHandler(async (req, res) => { // ✅ asyncHandl
 const searchDoctors = asyncHandler(async (req, res) => { // ✅ asyncHandler se wrap kiya
     const query = {};
     if (req.query.city) {
-        query.city = { $regex: req.query.city, $options: 'i' };
+        // If city looks like a full value, use exact match (case-insensitive)
+        if (req.query.city.length > 2 && !/[.*+?^${}()|[\]\\]/.test(req.query.city)) {
+            query.city = { $regex: `^${req.query.city}$`, $options: 'i' };
+        } else {
+            query.city = { $regex: req.query.city, $options: 'i' };
+        }
     }
     if (req.query.name) {
-        query.name = { $regex: req.query.name, $options: 'i' };
+        if (req.query.name.length > 2 && !/[.*+?^${}()|[\]\\]/.test(req.query.name)) {
+            query.name = { $regex: `^${req.query.name}$`, $options: 'i' };
+        } else {
+            query.name = { $regex: req.query.name, $options: 'i' };
+        }
     }
     if (req.query.specialty) {
-        // Use correct path for specialty
-        query['profileDetails.specialty'] = { $regex: req.query.specialty, $options: 'i' };
+        if (req.query.specialty.length > 2 && !/[.*+?^${}()|[\]\\]/.test(req.query.specialty)) {
+            query['profileDetails.specialty'] = { $regex: `^${req.query.specialty}$`, $options: 'i' };
+        } else {
+            query['profileDetails.specialty'] = { $regex: req.query.specialty, $options: 'i' };
+        }
     }
-    // Show all doctors, not just available ones
+    console.log('Doctor search query:', query);
     const doctors = await Doctor.find(query).select('-password');
+    console.log('Doctors found:', doctors.length);
     res.json(doctors);
 });
 
