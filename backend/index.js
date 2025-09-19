@@ -18,14 +18,26 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
 
-app.use(cors());
+// ✅ Allowed origins list
+const allowedOrigins = [
+  "http://localhost:3000",                       // local dev
+  "https://doctor-connect-fronted.vercel.app"    // deployed frontend
+];
+
+// ✅ Apply CORS middleware (before routes)
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -42,6 +54,14 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/documents', documentRoutes);
+
+// ✅ Socket.IO with CORS
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"]
+  }
+});
 
 // Socket.io
 const userSockets = {};
@@ -105,7 +125,7 @@ io.on('connection', (socket) => {
 app.set('io', io);
 app.set('userSockets', userSockets);
 
-// Final listen (important line for Railway)
+// ✅ Final listen (for Railway)
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
