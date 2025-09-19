@@ -1,0 +1,9 @@
+// Skiper UI installation instructions
+// Run this in your project root:
+// npm install @skiper/ui
+
+// Example usage in PatientDashboard.js:
+// import { Tabs, Tab, Card, Spinner, Alert } from '@skiper/ui';
+// Replace your tab buttons, cards, loading, and error states with Skiper UI components.
+
+// See below for the updated PatientDashboard.js code.

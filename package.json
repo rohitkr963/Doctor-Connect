@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@langchain/google-genai": "^0.2.16",
+    "axios": "^1.11.0",
     "cloudinary": "^2.7.0",
+    "langchain": "^0.3.30",
     "mongoose": "^8.17.0",
     "react-calendar": "^6.0.0",
     "react-transition-group": "^4.4.5",
