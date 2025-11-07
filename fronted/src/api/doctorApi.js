@@ -16,11 +16,12 @@ const getConfig = (token = null) => { // token optional banaya
 /**
  * Doctors ko search karne ke liye backend API ko call karta hai.
  */
-export const searchDoctorsAPI = async (city, name, specialty) => {
+export const searchDoctorsAPI = async (city, name, clinic, specialty) => {
     try {
         const params = new URLSearchParams();
         if (city) params.append('city', city);
         if (name) params.append('name', name);
+        if (clinic) params.append('clinic', clinic);
         if (specialty) params.append('specialty', specialty);
         const searchUrl = `${API_URL}/search?${params.toString()}`;
         const response = await axios.get(searchUrl);

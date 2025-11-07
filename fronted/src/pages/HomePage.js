@@ -18,6 +18,7 @@ const HomePage = () => {
   const [doctorsToDisplay, setDoctorsToDisplay] = useState([]);
   const [searchCity, setSearchCity] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchClinic, setSearchClinic] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -29,7 +30,7 @@ const HomePage = () => {
     const fetchPopularDoctors = async () => {
       setLoading(true);
       try {
-        const popDocs = await searchDoctorsAPI("Mumbai", "", "");
+        const popDocs = await searchDoctorsAPI("Mumbai", "", "", "");
         setDoctorsToDisplay(popDocs.slice(0, 6));
       } catch (err) {
         setError("Could not load popular doctors.");
@@ -46,6 +47,7 @@ const HomePage = () => {
     const params = new URLSearchParams();
     if (searchQuery) params.append('query', searchQuery);
     if (searchCity) params.append('city', searchCity);
+    if (searchClinic) params.append('clinic', searchClinic);
     navigate(`/search?${params.toString()}`);
   };
 
@@ -55,7 +57,7 @@ const HomePage = () => {
     setMessage('');
     setTitle(`Top Doctors in ${specialty}`);
     try {
-      const results = await searchDoctorsAPI("", "", specialty);
+      const results = await searchDoctorsAPI("", "", "", specialty);
       setDoctorsToDisplay(results);
     } catch (err) {
       setError(err.message);
@@ -103,10 +105,16 @@ const HomePage = () => {
               Find & Book the <span className="text-indigo-600 bg-white/40 px-2 rounded-xl shadow">Best Doctors</span> Near You
             </h1>
             <p className="mt-4 text-2xl text-gray-700 font-medium bg-white/40 rounded-xl px-3 py-2 shadow mb-2">With over 1000+ doctors and specialists, we provide the best healthcare services.</p>
-            <form onSubmit={handleSearch} className="mt-8 bg-white/60 backdrop-blur-lg p-4 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 border border-white/30 animate-fade-in-up delay-100">
-              <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="City (Optional)" className="flex-grow p-3 border border-gray-200 rounded-md bg-white/80 focus:ring-2 focus:ring-indigo-300 transition" />
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Doctor name" className="flex-grow p-3 border border-gray-200 rounded-md bg-white/80 focus:ring-2 focus:ring-indigo-300 transition" />
-              <button type="submit" className="bg-gradient-to-br from-indigo-500 to-teal-400 text-white font-bold p-3 rounded-md shadow hover:scale-105 hover:from-indigo-600 hover:to-teal-500 transition-all">Search</button>
+            <form onSubmit={handleSearch} className="mt-8 bg-white/60 backdrop-blur-lg p-6 rounded-2xl shadow-2xl border border-white/30 animate-fade-in-up delay-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <input type="text" value={searchCity} onChange={(e) => setSearchCity(e.target.value)} placeholder="City (Optional)" className="p-3 border border-gray-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all placeholder:text-gray-400" />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Doctor name" className="p-3 border border-gray-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all placeholder:text-gray-400" />
+                <input type="text" value={searchClinic} onChange={(e) => setSearchClinic(e.target.value)} placeholder="Clinic name" className="p-3 border border-gray-200 rounded-lg bg-white/80 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all placeholder:text-gray-400" />
+                <button type="submit" className="bg-gradient-to-br from-indigo-500 to-teal-400 text-white font-bold p-3 rounded-lg shadow-lg hover:scale-105 hover:shadow-xl hover:from-indigo-600 hover:to-teal-500 transition-all duration-300 flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  Search
+                </button>
+              </div>
             </form>
           </div>
           {/* Right: Doctor Illustration with Glassmorphism */}

@@ -11,6 +11,7 @@ const SearchResultsPage = () => {
   const queryParams = useQuery();
   const query = queryParams.get('query') || '';
   const city = queryParams.get('city') || '';
+  const clinic = queryParams.get('clinic') || '';
   const specialty = queryParams.get('specialty') || '';
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,11 +19,11 @@ const SearchResultsPage = () => {
 
   useEffect(() => {
     // Only search if at least one filter is filled
-    if (!query && !city && !specialty) return;
+    if (!query && !city && !clinic && !specialty) return;
     setLoading(true);
     setError('');
     // Always send raw specialty input for partial matching
-    searchDoctorsAPI(city, query, specialty.trim())
+    searchDoctorsAPI(city, query, clinic, specialty.trim())
       .then(data => {
         setResults(data || []);
         setLoading(false);
@@ -31,7 +32,7 @@ const SearchResultsPage = () => {
         setError('Failed to fetch search results.');
         setLoading(false);
       });
-  }, [query, city, specialty]);
+  }, [query, city, clinic, specialty]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white py-8 px-4">
