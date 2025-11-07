@@ -196,7 +196,7 @@ const updateDoctorProfile = asyncHandler(async (req, res) => { // ✅ asyncHandl
 // @desc    Search for doctors
 // @route   GET /api/doctors/search
 // @access  Public
-const searchDoctors = asyncHandler(async (req, res) => { // ✅ asyncHandler se wrap kiya
+const searchDoctors = asyncHandler(async (req, res) => { // asyncHandler se wrap kiya
     const query = {};
     if (req.query.city) {
         // If city looks like a full value, use exact match (case-insensitive)
@@ -211,6 +211,13 @@ const searchDoctors = asyncHandler(async (req, res) => { // ✅ asyncHandler se 
             query.name = { $regex: `^${req.query.name}$`, $options: 'i' };
         } else {
             query.name = { $regex: req.query.name, $options: 'i' };
+        }
+    }
+    if (req.query.clinic) {
+        if (req.query.clinic.length > 2 && !/[.*+?^${}()|[\]\\]/.test(req.query.clinic)) {
+            query.clinicName = { $regex: `^${req.query.clinic}$`, $options: 'i' };
+        } else {
+            query.clinicName = { $regex: req.query.clinic, $options: 'i' };
         }
     }
     if (req.query.specialty) {
