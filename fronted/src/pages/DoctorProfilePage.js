@@ -4,6 +4,7 @@
   import { submitDoctorReviewAPI, editDoctorReviewAPI, deleteDoctorReviewAPI, bookAppointmentAPI } from '../api/userApi';
   import axios from 'axios';
   import AuthContext from '../context/AuthContext';
+import DoctorChatBot from '../components/DoctorChatBot';
 
 
 
@@ -230,6 +231,7 @@
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-100 via-blue-100 to-white animate-fade-in-up">
+        <DoctorChatBot />
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 animate-fade-in-up">
             <button onClick={handleManualRefresh} className="bg-gradient-to-r from-blue-500 to-teal-400 text-white px-5 py-2 rounded-xl shadow-lg font-bold hover:scale-105 transition-all mb-2 sm:mb-0 animate-pulse-on-hover">Refresh Profile</button>

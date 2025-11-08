@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate ko import karein
 import { registerDoctorAPI } from '../api/doctorApi';
+import DoctorChatBot from '../components/DoctorChatBot';
 
 const DoctorRegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -44,6 +45,7 @@ const DoctorRegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex items-center justify-center py-12 animate-fade-in-up">
+      <DoctorChatBot />
       <div className="w-full max-w-lg bg-white/80 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border border-blue-100 animate-fade-in-up animate-float-card">
         <h2 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 mb-8 animate-heading-glow">Doctor Registration</h2>
         {error && <p className="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-center animate-fade-in-up">{error}</p>}

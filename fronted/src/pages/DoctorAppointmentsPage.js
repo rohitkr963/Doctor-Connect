@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import DoctorChatBot from '../components/DoctorChatBot';
 
 const DoctorAppointmentsPage = () => {
   const { auth } = useContext(AuthContext);
@@ -46,6 +47,7 @@ const DoctorAppointmentsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex items-center justify-center py-10 animate-fade-in-up">
+      <DoctorChatBot />
       <div className="w-full max-w-5xl mx-auto p-4 animate-fade-in-up">
         <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-700 mb-10 animate-heading-glow">Your Appointments</h1>
         {appointments.length === 0 ? (

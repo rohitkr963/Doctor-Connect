@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import ChatModal from '../components/ChatModal';
 import axios from 'axios';
+import DoctorChatBot from '../components/DoctorChatBot';
 
 const DoctorChatPage = () => {
   const { auth } = useContext(AuthContext);
@@ -54,6 +55,7 @@ const DoctorChatPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-blue-100 via-teal-100 to-white animate-fade-in-up">
+      <DoctorChatBot />
       {/* Sidebar: User list - responsive */}
       <div className="w-full md:w-1/3 lg:w-1/4 bg-white/60 backdrop-blur-2xl border-r border-blue-100 h-[40vh] md:h-auto overflow-y-auto shadow-2xl animate-fade-in-up animate-float-card rounded-tr-3xl rounded-br-3xl">
         <div className="p-4 sm:p-6 font-extrabold text-xl sm:text-2xl border-b bg-gradient-to-r from-teal-600 to-blue-600 text-white animate-heading-glow rounded-tr-3xl">Chats</div>

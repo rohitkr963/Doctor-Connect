@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { getDoctorByIdAPI, updateDoctorProfileAPI } from '../api/doctorApi';
+import DoctorChatBot from '../components/DoctorChatBot';
 
 const allowedSpecialties = ['Neurology', 'Cardiology', 'Orthopedics', 'Dermatology'];
 
@@ -167,6 +168,7 @@ const DoctorProfileEditPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12">
+      <DoctorChatBot />
       <div className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Edit Your Profile</h2>
         {error && <p className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-center">{error}</p>}

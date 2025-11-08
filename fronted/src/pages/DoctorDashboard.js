@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { getDoctorByIdAPI, updateDoctorStatusAPI, getMyQueueAPI, manageQueueAPI, getPatientHistoryAPI } from '../api/doctorApi';
-import DoctorChatBot from '../components/DoctorChatBot'
+import DoctorChatBot from '../components/DoctorChatBot';
+
 // Icon Components
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.125-1.273-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.125-1.273.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
@@ -44,6 +45,7 @@ const DoctorDashboard = () => {
       }
     }
   }, [auth]);
+
 
   useEffect(() => {
     fetchData();
@@ -124,9 +126,12 @@ const DoctorDashboard = () => {
     return <div className="text-center p-8">Loading Dashboard...</div>;
   }
 
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-100 to-white flex flex-col py-4 animate-fade-in-up">
-      <DoctorChatBot />
+        <DoctorChatBot />
+      
       <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 animate-fade-in-up animate-float-card gap-4">
           <div>

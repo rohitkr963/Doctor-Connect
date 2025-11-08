@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { askChatbotAPI } from '../api/chatbotApi';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import useDoctorSearchIntent from '../hooks/useDoctorSearchIntent';
 
 // --- Icon Components ---
 const BotIcon = () => <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 5V3m0 18v-2M8 8.5a.5.5 0 10-1 0 .5.5 0 001 0zM17 8.5a.5.5 0 10-1 0 .5.5 0 001 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12a4 4 0 110-8 4 4 0 010 8z" /></svg>;
@@ -15,13 +14,13 @@ const SendIcon = () => <svg className="w-6 h-6 text-white" fill="currentColor" v
 const HealthChatBot = () => {
     const { auth } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { parse } = useDoctorSearchIntent();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         { role: 'model', text: "Hello! I'm your health assistant. Ask me about your symptoms or find a doctor." }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [sessionId, setSessionId] = useState(null); // Track session ID
     const chatEndRef = useRef(null);
 
     useEffect(() => {
@@ -45,8 +44,23 @@ const HealthChatBot = () => {
 
         try {
             const chatHistoryForApi = updatedMessages.map(msg => ({ role: msg.role, text: msg.text }));
-            const botReply = await askChatbotAPI(userMessageText, chatHistoryForApi, auth.token);
-            const botMessage = { role: 'model', text: botReply.reply };
+            console.log('📤 Sending to chatbot:', { message: userMessageText, currentSessionId: sessionId });
+            const botReply = await askChatbotAPI(userMessageText, chatHistoryForApi, auth.token, sessionId);
+            
+            // Save sessionId from backend response for future requests
+            if (botReply.sessionId) {
+                console.log('📥 Received sessionId from backend:', botReply.sessionId);
+                setSessionId(botReply.sessionId);
+            }
+            
+            const botMessage = { 
+                role: 'model', 
+                text: botReply.reply,
+                doctors: botReply.doctors || null,  // Include doctors for rendering cards
+                availability: botReply.availability || null,  // Include availability slots
+                doctorId: botReply.doctorId || null,
+                action: botReply.action || null
+            };
             setMessages(prev => [...prev, botMessage]);
         } catch (error) {
             setMessages(prev => [...prev, { role: 'model', text: "Sorry, I'm having trouble connecting. Please try again later." }]);
@@ -86,6 +100,32 @@ const HealthChatBot = () => {
                                                 {msg.doctors.map(doc => (
                                                     <DoctorProfileCard key={doc._id} doctor={doc} />
                                                 ))}
+                                            </div>
+                                        )}
+                                        {msg.availability && msg.availability.length > 0 && (
+                                            <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border border-green-200">
+                                                <h4 className="text-sm font-semibold text-gray-800 mb-2">📅 Available Slots (Click to book):</h4>
+                                                <div className="space-y-3">
+                                                    {msg.availability.map((dayData, dayIdx) => (
+                                                        <div key={dayIdx} className="bg-white rounded-md p-2 shadow-sm">
+                                                            <p className="text-xs font-medium text-gray-700 mb-1">{dayData.displayDate}</p>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {dayData.slots.slice(0, 6).map((slot, slotIdx) => (
+                                                                    <button
+                                                                        key={slotIdx}
+                                                                        onClick={() => setInput(`${dayData.date} ko ${slot} pe book karo`)}
+                                                                        className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white text-xs rounded-md transition-colors duration-200 shadow-sm"
+                                                                    >
+                                                                        {slot}
+                                                                    </button>
+                                                                ))}
+                                                                {dayData.slots.length > 6 && (
+                                                                    <span className="text-xs text-gray-500 self-center">+{dayData.slots.length - 6} more</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
