@@ -12,6 +12,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const doctorChatbotRoutes = require('./routes/doctorChatbotRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 
 connectDB();
@@ -53,6 +54,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/ai', doctorChatbotRoutes); // Doctor chatbot
 app.use('/api/documents', documentRoutes);
 
 // ✅ Socket.IO with CORS
@@ -63,9 +65,17 @@ const io = new Server(server, {
   }
 });
 
-// Socket.io
+// Socket.io - Import handlers
+const { setupSocketHandlers } = require('./utils/socketEvents');
+
 const userSockets = {};
 io.on('connection', (socket) => {
+  console.log('🔌 New socket connection:', socket.id);
+  
+  // Setup chatbot-related socket handlers
+  setupSocketHandlers(io, socket);
+  
+  // Legacy handlers for chat and video call
   socket.on('register', (userId) => {
     userSockets[userId] = socket.id;
   });
