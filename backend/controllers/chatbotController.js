@@ -107,8 +107,25 @@ Intent:`
                 break; // Success, exit loop
             } catch (apiError) {
                 retries--;
+                // Log detailed Gemini API error
                 console.error(`Gemini API error (${retries} retries left):`, apiError.message);
-                if (retries === 0) throw apiError;
+                if (apiError.response) {
+                    console.error('Gemini API response data:', apiError.response.data);
+                }
+                if (apiError.config) {
+                    console.error('Gemini API request config:', apiError.config);
+                }
+                if (retries === 0) {
+                    // In development, send error details to frontend for debugging
+                    if (process.env.NODE_ENV !== 'production') {
+                        return res.status(500).json({
+                            message: 'Gemini API error',
+                            error: apiError.message,
+                            response: apiError.response?.data,
+                        });
+                    }
+                    throw apiError;
+                }
                 await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
             }
         }
