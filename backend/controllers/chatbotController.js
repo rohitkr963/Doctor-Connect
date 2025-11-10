@@ -98,40 +98,54 @@ Intent:`
     try {
         // Get intent from Gemini with retry logic
         let intentRes;
-        let retries = 3;
+        let intent = 'unknown';
+        let retries = 2;
+        let useRuleBasedFallback = false;
+        
         while (retries > 0) {
             try {
                 intentRes = await axios.post(gemmaApiUrl, intentPrompt, {
-                    timeout: 10000, // 10 second timeout
+                    timeout: 15000, // 15 second timeout
                 });
                 break; // Success, exit loop
             } catch (apiError) {
                 retries--;
-                // Log detailed Gemini API error
-                console.error(`Gemini API error (${retries} retries left):`, apiError.message);
-                if (apiError.response) {
-                    console.error('Gemini API response data:', apiError.response.data);
-                }
-                if (apiError.config) {
-                    console.error('Gemini API request config:', apiError.config);
-                }
+                console.error(`⚠️ Gemini API error (${retries} retries left):`, apiError.message);
+                
                 if (retries === 0) {
-                    // In development, send error details to frontend for debugging
-                    if (process.env.NODE_ENV !== 'production') {
-                        return res.status(500).json({
-                            message: 'Gemini API error',
-                            error: apiError.message,
-                            response: apiError.response?.data,
-                        });
-                    }
-                    throw apiError;
+                    console.log('🔄 Switching to rule-based intent detection');
+                    useRuleBasedFallback = true;
+                    break;
                 }
                 await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
             }
         }
         
-        const intentText = intentRes.data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase() || '';
-        const intent = intentText.split('\n')[0].trim();
+        // Rule-based fallback intent detection
+        if (useRuleBasedFallback) {
+            const lowerMsg = message.toLowerCase();
+            
+            // Booking intent with doctor name
+            if ((lowerMsg.includes('book') || lowerMsg.includes('appointment')) && 
+                (lowerMsg.match(/doctor\s+[a-z]+|dr\.\s*[a-z]+|[a-z]+\s+ke\s+sath/i))) {
+                intent = 'book_appointment';
+                console.log('📌 Rule-based: book_appointment');
+            }
+            // Find doctor intent
+            else if (lowerMsg.match(/neurologist|cardiologist|dermatologist|orthopedic|doctor|dhundo|find|search/i) ||
+                     lowerMsg.match(/headache|migraine|chest pain|skin|joint pain|fever/i)) {
+                intent = 'find_doctor';
+                console.log('📌 Rule-based: find_doctor');
+            }
+            // Greeting
+            else if (lowerMsg.match(/^(hi|hello|hey|namaste|kaise ho)/i)) {
+                intent = 'unknown';
+                console.log('📌 Rule-based: unknown (greeting)');
+            }
+        } else {
+            const intentText = intentRes.data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase() || '';
+            intent = intentText.split('\n')[0].trim();
+        }
 
         // =================================================================
         // CHECK AVAILABILITY - Show available dates and slots
@@ -239,6 +253,8 @@ Intent:`
             if (doctorId) {
                 const doctor = await Doctor.findById(doctorId).select('name availability city profileDetails');
                 if (doctor && doctor.availability) {
+                    console.log('🔍 Availability Check - Doctor:', doctor.name, 'Has availability:', doctor.availability?.length || 0);
+                    
                     const today = new Date();
                     const availableDates = [];
                     
@@ -264,6 +280,37 @@ Intent:`
                                 });
                             }
                         }
+                    }
+                    
+                    // FALLBACK: Check all dates if no slots found
+                    if (availableDates.length === 0) {
+                        console.log('⚠️ No slots in next 14 days. Checking ALL availability...');
+                        doctor.availability.forEach(avail => {
+                            if (avail.slots && avail.slots.length > 0) {
+                                const freeSlots = avail.slots.filter(s => !s.isBooked);
+                                if (freeSlots.length > 0) {
+                                    let displayDate;
+                                    try {
+                                        const availDate = new Date(avail.date);
+                                        displayDate = availDate.toLocaleDateString('en-IN', { 
+                                            weekday: 'short', 
+                                            day: 'numeric', 
+                                            month: 'short',
+                                            year: 'numeric'
+                                        });
+                                    } catch (e) {
+                                        displayDate = avail.date;
+                                    }
+                                    
+                                    availableDates.push({
+                                        date: avail.date,
+                                        displayDate: displayDate,
+                                        slots: freeSlots.map(s => s.time)
+                                    });
+                                }
+                            }
+                        });
+                        console.log('📋 FALLBACK: Found', availableDates.length, 'dates');
                     }
                     
                     if (availableDates.length > 0) {
@@ -503,6 +550,19 @@ If date/time not clear, respond: UNCLEAR`
                 const fee = doctorForSlots?.profileDetails?.consultationFee;
                 const feeText = (fee === undefined || fee === null) ? 'Not Set' : (fee === 0 ? 'Free' : `₹${fee}`);
                 
+                // Debug: Log doctor availability structure
+                console.log('🔍 DEBUG - Doctor Availability Check:', {
+                    doctorId: doctorId,
+                    doctorName: doctorName,
+                    hasAvailability: !!doctorForSlots?.availability,
+                    availabilityLength: doctorForSlots?.availability?.length || 0,
+                    availabilityDates: doctorForSlots?.availability?.map(a => ({
+                        date: a.date,
+                        slotsCount: a.slots?.length || 0,
+                        firstSlot: a.slots?.[0]
+                    })) || []
+                });
+                
                 // Get real available slots for next 14 days
                 const today = new Date();
                 const availableDates = [];
@@ -514,8 +574,12 @@ If date/time not clear, respond: UNCLEAR`
                         const dateStr = checkDate.toISOString().split('T')[0];
                         const dayAvail = doctorForSlots.availability.find(a => a.date === dateStr);
                         
+                        console.log(`📅 Checking date ${dateStr}: ${dayAvail ? 'Found' : 'Not Found'}`);
+                        
                         if (dayAvail && dayAvail.slots) {
                             const freeSlots = dayAvail.slots.filter(s => !s.isBooked);
+                            console.log(`   Total slots: ${dayAvail.slots.length}, Free slots: ${freeSlots.length}`);
+                            
                             if (freeSlots.length > 0) {
                                 availableDates.push({
                                     date: dateStr,
@@ -530,6 +594,42 @@ If date/time not clear, respond: UNCLEAR`
                             }
                         }
                     }
+                }
+                
+                console.log('✅ Available dates found:', availableDates.length);
+                
+                // FALLBACK: If no slots found using date matching, check ALL availability entries
+                if (availableDates.length === 0 && doctorForSlots?.availability) {
+                    console.log('⚠️ No slots found with date matching. Checking ALL availability entries...');
+                    
+                    doctorForSlots.availability.forEach(avail => {
+                        if (avail.slots && avail.slots.length > 0) {
+                            const freeSlots = avail.slots.filter(s => !s.isBooked);
+                            if (freeSlots.length > 0) {
+                                // Parse the date from availability
+                                let displayDate;
+                                try {
+                                    const availDate = new Date(avail.date);
+                                    displayDate = availDate.toLocaleDateString('en-IN', { 
+                                        weekday: 'short', 
+                                        day: 'numeric', 
+                                        month: 'short',
+                                        year: 'numeric'
+                                    });
+                                } catch (e) {
+                                    displayDate = avail.date; // Use raw date if parsing fails
+                                }
+                                
+                                availableDates.push({
+                                    date: avail.date,
+                                    displayDate: displayDate,
+                                    slots: freeSlots.map(s => s.time)
+                                });
+                            }
+                        }
+                    });
+                    
+                    console.log('📋 FALLBACK: Found', availableDates.length, 'dates with availability');
                 }
                 
                 // If slots available, show them
